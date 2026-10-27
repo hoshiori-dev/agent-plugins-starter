@@ -1,3 +1,4 @@
+### Node.js ###
 # Logs
 logs
 *.log
@@ -147,3 +148,16 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+### Devcontainer ###
+devcontainer-lock.json
+
+### Skills Lock ###
+skills-lock.json
+
+### Project Files ###
+.agents/skills/meta-*/
+.claude/skills/meta-*
+
+### Build output ###
+dist/
