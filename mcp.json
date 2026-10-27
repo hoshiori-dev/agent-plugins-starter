@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "example-server": {
+      "type": "stdio",
+      "command": "deno",
+      "args": [
+        "run",
+        "--quiet",
+        "--allow-read=${PLUGIN_ROOT}",
+        "${PLUGIN_ROOT}/mcp/example-server/server.ts"
+      ]
+    }
+  }
+}

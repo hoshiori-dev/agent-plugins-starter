@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "example-server": {
+      "command": "deno",
+      "args": [
+        "run",
+        "--quiet",
+        "--allow-read=.",
+        "mcp/example-server/server.ts"
+      ]
+    }
+  }
+}

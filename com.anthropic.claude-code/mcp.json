@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "example-server": {
+      "type": "stdio",
+      "command": "deno",
+      "args": [
+        "run",
+        "--quiet",
+        "--allow-read=${CLAUDE_PLUGIN_ROOT}",
+        "${CLAUDE_PLUGIN_ROOT}/mcp/example-server/server.ts"
+      ]
+    }
+  }
+}

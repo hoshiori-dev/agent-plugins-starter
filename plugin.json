@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "agent-plugins-starter",
+  "version": "0.1.0",
+  "description": "Template plugin that ships skills, an MCP server, and client-specific agents for Claude Code, Codex, and Antigravity.",
+  "author": {
+    "name": "hoshiori-dev",
+    "url": "https://github.com/hoshiori-dev"
+  },
+  "homepage": "https://github.com/hoshiori-dev/agent-plugins-starter",
+  "repository": "https://github.com/hoshiori-dev/agent-plugins-starter",
+  "license": "MIT",
+  "keywords": ["agent-plugins", "template", "skills", "mcp", "claude-code", "codex", "antigravity"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Agent Plugins Starter",
+        "shortDescription": "Template plugin that ships skills, an MCP server, and client-specific agents for Claude Code, Codex, and Antigravity.",
+        "developerName": "hoshiori-dev",
+        "category": "Productivity",
+        "websiteURL": "https://github.com/hoshiori-dev/agent-plugins-starter"
+      }
+    }
+  }
+}

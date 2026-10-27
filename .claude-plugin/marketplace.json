@@ -1,0 +1,14 @@
+{
+  "name": "agent-plugins-starter",
+  "owner": {
+    "name": "hoshiori-dev"
+  },
+  "description": "Template plugin that ships skills, an MCP server, and client-specific agents for Claude Code, Codex, and Antigravity.",
+  "plugins": [
+    {
+      "name": "agent-plugins-starter",
+      "source": "./",
+      "description": "Template plugin that ships skills, an MCP server, and client-specific agents for Claude Code, Codex, and Antigravity."
+    }
+  ]
+}
