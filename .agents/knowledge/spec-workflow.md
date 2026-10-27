@@ -28,7 +28,8 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
   that every entry has a spec and every spec an entry.
 - A change to the harness, scripts, CI, documentation, or generated files is
   spec-less: `.openspec.yaml` sets `skip_specs: true`, the change ships
-  proposal, design, and tasks, and the pull request gets `spec: skipped`.
+  proposal, design, and tasks, and the `pr-labels` workflow labels the pull
+  request `spec: skipped`.
 - Specs describe behaviour the change touches; nothing is back-filled for
   untouched code.
 
@@ -40,7 +41,11 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
    implementation).
 2. **Gate 1, proposal approval**: the maintainer reads proposal, design, and
    delta specs on the PR, discusses in conversation, and adds the label
-   `spec: approved`. Tasks are written only after that label.
+   `spec: approved`. The `pr-labels` workflow records the approval in a
+   comment (commit, account, hash of every file under the unarchived changes)
+   and keeps the label only while that package is unchanged: an edit to the
+   change after approval puts `spec: pending` back and the maintainer approves
+   again. Tasks are written only after the label.
 3. **Implement**: `openspec-apply-change`, one task at a time, `just check`
    green between tasks; `just gen` after any change to `plugin.json`,
    `mcp.json`, or an agents directory.
@@ -54,6 +59,13 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
    The `pr` workflow reports the required check `checks / spec-archived` only
    when no unarchived change remains, so the merge is blocked until then
    (`just spec-archived` shows what is still open).
+
+The state label is maintained by the `pr-labels` workflow from the pull
+request's tree, never by hand: `spec: skipped` (nothing under
+`openspec/changes/` touched), `spec: pending` (an unarchived change without a
+standing approval), `spec: approved` (added by a write-permission account,
+recorded, package unchanged), `spec: archived` (the change is archived in this
+pull request). `just pr-labels <n>` prints the decision without writing.
 
 Agents run steps 1, 3, and 4 up to marking ready, and step 5 once the review
 approved; gate 1, the review itself, and the merge are human

@@ -47,6 +47,10 @@ spec-check:
 spec-archived:
     deno run --allow-read scripts/check_spec_archived.ts
 
+# Print the OpenSpec state label a pull request should carry, without writing (the pr-labels workflow applies it).
+pr-labels number:
+    deno run --allow-read --allow-env --allow-run=gh scripts/sync_pr_labels.ts "$1"
+
 # Secret scan of the working tree.
 secrets:
     betterleaks dir . --no-banner --redact

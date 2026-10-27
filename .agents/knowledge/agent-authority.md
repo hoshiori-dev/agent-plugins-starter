@@ -56,10 +56,16 @@ request automatic.
 
 | Gate | Meaning | Owner |
 |---|---|---|
-| Proposal approval | the maintainer closes the proposal discussion on the PR and adds `spec: approved` | maintainer |
+| Proposal approval | the maintainer closes the proposal discussion on the PR and adds `spec: approved`; the `pr-labels` workflow records the approved commit | maintainer |
 | Review admission | the self-review above passes; the draft becomes ready and the maintainer's review is requested | agent (the implementer) |
 | Integration | squash merge into `main` | maintainer |
 | Release | tag `vX.Y.Z` pushed | maintainer |
+
+The `pr-labels` workflow accepts `spec: approved` only from an account with
+write permission, records the approved commit, and withdraws the label when the
+change is edited afterwards. It cannot tell the maintainer from an agent
+working through the maintainer's account: that line is this policy, not the
+script. An agent never adds `spec: approved`.
 
 ## Escalation: stop and hand to a human when
 

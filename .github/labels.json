@@ -6,7 +6,9 @@
   { "name": "area: mcp", "color": "c5def5", "description": "mcp.json, bundled servers, and the mcp catalog" },
   { "name": "area: agents", "color": "c5def5", "description": "Client agent files and the agent catalog" },
   { "name": "area: harness", "color": "c5def5", "description": "AGENTS.md, knowledge, project skills, scripts, CI" },
-  { "name": "spec: approved", "color": "5319e7", "description": "Maintainer approved the OpenSpec proposal; implementation may start" },
-  { "name": "spec: skipped", "color": "e4e669", "description": "Spec-less change (harness, tooling, docs) with skip_specs: true" },
+  { "name": "spec: pending", "color": "fbca04", "description": "Unarchived OpenSpec change awaiting the maintainer's approval (set by the pr-labels workflow)" },
+  { "name": "spec: approved", "color": "5319e7", "description": "A maintainer approved the OpenSpec change at the recorded commit; kept while the package is unchanged" },
+  { "name": "spec: archived", "color": "006b75", "description": "The OpenSpec change is archived; the pull request may merge (set by the pr-labels workflow)" },
+  { "name": "spec: skipped", "color": "e4e669", "description": "No OpenSpec change touched: harness, tooling, or documentation (set by the pr-labels workflow)" },
   { "name": "dependencies", "color": "0366d6", "description": "Dependency or action version updates" }
 ]

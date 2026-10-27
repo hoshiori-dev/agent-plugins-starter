@@ -51,8 +51,8 @@ Area labels: `area: skills | mcp | agents | harness`.
    (`.agents/knowledge/agent-authority.md`, Handoff). Approving and merging
    stay human.
 4. After the maintainer's review, archive the OpenSpec change on the branch
-   (`openspec-archive-change`), or confirm `spec: skipped` for a spec-less
-   change, and report once more. Until the archive is pushed the `pr`
+   (`openspec-archive-change`); a spec-less change carries `spec: skipped`
+   from the `pr-labels` workflow, nothing to do. Report once more. Until the archive is pushed the `pr`
    workflow withholds `checks / spec-archived` and the merge stays blocked;
    `just spec-archived` names what is still open.
 
