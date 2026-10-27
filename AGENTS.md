@@ -59,6 +59,7 @@ scripts/                       <- management code (Deno): gen, checks, dist, lab
 | Fresh repository created from this template | the `template-tailor` skill (import existing content first with `template-migrate`) |
 | Adding or dropping a client or catalog, changing check strictness, upgrading OpenSpec, pulling template updates | the `template-adjust` skill |
 | Editing this file or any knowledge file; every tenth merged PR | `.agents/knowledge/maintenance.md` |
+| A client or OpenSpec was upgraded, a client behaves differently than documented, or you want to remove a workaround | `.agents/knowledge/compatibility-watch.md` |
 
 ## Development Environment
 
@@ -96,6 +97,7 @@ and `v*` tag release.
 | `plugin.json`, `mcp.json`, or any `com.*/agents/` file | run `just gen`; commit the generated files |
 | A skill, server, or agent is added or removed | its spec under `openspec/specs/<catalog>/<name>/`, every enabled client's agent file, `just gen` |
 | A `justfile` recipe or CI job | the Validation table above, `.agents/knowledge/github/checks.md`, `.github/workflows/checks.yml` |
-| A client's loading behaviour (new version) | `.agents/knowledge/client-matrix.md` table and verification log |
+| A client's loading behaviour (new version) | `.agents/knowledge/client-matrix.md` table and verification log; the matching rows of `.agents/knowledge/compatibility-watch.md` |
+| A check, generator branch, or document exists only to work around a client or spec gap | add a row to `.agents/knowledge/compatibility-watch.md` |
 | OpenSpec version | `openspec init --tools agents --force`, `.agents/knowledge/spec-workflow.md` |
 | This file passes 120 lines, or every tenth merged PR | the reclamation in `.agents/knowledge/maintenance.md` |

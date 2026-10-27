@@ -18,7 +18,7 @@ Walk every harness component and hunt:
 
 - stale paths and dead commands: run them, do not trust them;
 - rules the code or a client now contradicts (re-run `just clients-validate`
-  and update the verification log in `client-matrix.md`);
+  and `just versions`, update the verification log in `client-matrix.md`);
 - the same fact stated twice;
 - content unreachable from `AGENTS.md`;
 - triggers whose subject moved or vanished;
@@ -30,13 +30,10 @@ delete. Record the run below.
 
 ### Standing items
 
-- Antigravity: when `enable-agent-plugins-spec` is on by default, re-evaluate
-  whether `com.google.antigravity/` still needs its own `plugin.json`,
-  `mcp_config.json`, and links, or shrinks to an overlay.
-- Claude Code: if `.agents/skills` becomes a supported project-skill location,
-  drop the `.claude/skills` symlinks and the `claude-skill-link` check.
-- Codex: if plugins gain an agents component, move `com.openai/agents/` into it
-  and drop the `.codex/config.toml` declarations.
+Walk every row of `.agents/knowledge/compatibility-watch.md`: run its
+"Re-check how" column, and when "Resolved when" holds, execute "Then" in one
+change and delete the row. Record client and tool versions with
+`just versions` in the run below.
 
 ### Runs
 

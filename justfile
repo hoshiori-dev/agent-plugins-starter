@@ -63,6 +63,15 @@ clients-validate:
     codex plugin list | grep -F "agent-plugins-starter@agent-plugins-starter"
     codex plugin marketplace remove agent-plugins-starter >/dev/null
 
+# Print the versions of the clients and tools the compatibility watch is verified against.
+versions:
+    deno --version | head -1
+    openspec --version
+    claude --version
+    codex --version
+    ~/.gemini/bin/agy changelog 2>/dev/null | awk 'NR == 1 { print "agy " $0 }'
+    betterleaks version
+
 # Files that belong to one client (codex | claude-code | antigravity).
 client-footprint id:
     deno run --allow-read --allow-run=git scripts/check_plugin.ts --footprint "$1"

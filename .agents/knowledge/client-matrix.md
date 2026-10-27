@@ -3,7 +3,7 @@
 Read when adding or changing a skill, MCP server, or agent, when a client does
 not load something, or before touching a `com.*` directory or a wiring file.
 Facts below were verified on 2026-10-27 with Claude Code 2.1.311, Codex CLI
-0.164.0, and Antigravity CLI (`agy`, build 2026-10-24); re-verify when a client
+0.164.0, and Antigravity CLI (`agy` 1.4.7, build 2026-10-24); re-verify when a client
 updates and record the date here.
 
 ## How each client loads each component
@@ -26,27 +26,12 @@ files.
 
 ## Known limitations
 
-- **Antigravity spec support is behind a flag.** This `agy` build recognises
-  the Agent Plugins `$schema` (`enable-agent-plugins-spec`, off by default)
-  and names `com.google.antigravity` as its namespace, but its installer still
-  reads `skills/`, `agents/`, and `mcp_config.json` from the plugin root and
-  ignores `mcp.json`. Hence the self-contained package in
-  `com.google.antigravity/`. `agy plugin validate --strict .` on the root
-  warns about this and fails; validate the package strictly and the root
-  non-strictly.
-- **Antigravity remote install is skills-only.** `agy plugin install <GitHub URL>`
-  reads the root, which has no `agents/` or `mcp_config.json`. Users install
-  the package directory from a clone.
-- **Antigravity MCP paths are relative.** `mcp_config.json` has no plugin-root
-  placeholder; generated paths are relative to the package, and Antigravity
-  starts the server there (verified through the workspace link; the installed
-  copy has the same layout).
-- **Codex agents do not ship.** Codex has no plugin agent component; the
-  `com.openai/agents/` files are usable only through a `config.toml` that
-  declares them, which this repository's `.codex/config.toml` does.
-- **`com.anthropic.claude-code` is a self-chosen namespace.** Anthropic has
-  published none; `com.openai` and `com.google.antigravity` are the clients'
-  own.
+Every limitation, the workaround built for it, how to re-check it, and what
+to do when it lifts is one row of `.agents/knowledge/compatibility-watch.md`.
+Headlines only: Antigravity reads the spec files only behind a flag (W1, W2,
+W5) and has no plugin-root placeholder (W3); Claude Code needs `.claude/skills`
+symlinks (W6) and generated pointer files (W7); Codex plugins ship no agents
+(W9); `com.anthropic.claude-code` is a self-chosen namespace (W10).
 
 ## Verification log
 

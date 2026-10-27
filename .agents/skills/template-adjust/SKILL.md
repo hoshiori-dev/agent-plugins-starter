@@ -14,7 +14,9 @@ description: >-
 # Template adjustment
 
 Each branch below is a complete procedure; run only the one the user asked
-for, then `just check`.
+for, then `just check`. Before any branch, read
+`.agents/knowledge/compatibility-watch.md`: a client upgrade may have lifted a
+workaround, and that row's disposition is often the real change to make.
 
 ## Add or remove a client
 
