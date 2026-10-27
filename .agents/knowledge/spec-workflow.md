@@ -26,9 +26,13 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
 
 - A change to any shipped entry carries a delta spec; `just validate` enforces
   that every entry has a spec and every spec an entry.
-- A change to the harness, scripts, CI, documentation, or generated files is
-  spec-less: `.openspec.yaml` sets `skip_specs: true`, the change ships
-  proposal, design, and tasks, and the pull request gets `spec: skipped`.
+- A change that touches no shipped entry (harness, scripts, CI,
+  documentation, generated files) is spec-less and needs no change directory:
+  it goes straight to a pull request, which the `pr-labels` workflow labels
+  `spec: skipped`. When such a change is large enough to deserve a recorded
+  design, open an OpenSpec change whose `.openspec.yaml` sets `skip_specs:
+  true` and ships proposal, design, and tasks; it is labelled `spec: skipped`
+  too, skips gate 1, and is archived before merge like any other change.
 - Specs describe behaviour the change touches; nothing is back-filled for
   untouched code.
 
@@ -40,7 +44,11 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
    implementation).
 2. **Gate 1, proposal approval**: the maintainer reads proposal, design, and
    delta specs on the PR, discusses in conversation, and adds the label
-   `spec: approved`. Tasks are written only after that label.
+   `spec: approved`. The `pr-labels` workflow records the approval in a
+   comment (commit, account, hash of every file under the unarchived changes)
+   and keeps the label only while that package is unchanged: an edit to the
+   change after approval puts `spec: pending` back and the maintainer approves
+   again. Tasks are written only after the label.
 3. **Implement**: `openspec-apply-change`, one task at a time, `just check`
    green between tasks; `just gen` after any change to `plugin.json`,
    `mcp.json`, or an agents directory.
@@ -54,6 +62,14 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
    The `pr` workflow reports the required check `checks / spec-archived` only
    when no unarchived change remains, so the merge is blocked until then
    (`just spec-archived` shows what is still open).
+
+The state label is maintained by the `pr-labels` workflow from the pull
+request's tree, never by hand: `spec: skipped` (nothing under
+`openspec/changes/` touched, or every unarchived change sets `skip_specs:
+true`; the archive gate still applies), `spec: pending` (an unarchived change without a
+standing approval), `spec: approved` (added by a write-permission account,
+recorded, package unchanged), `spec: archived` (the change is archived in this
+pull request). `just pr-labels <n>` prints the decision without writing.
 
 Agents run steps 1, 3, and 4 up to marking ready, and step 5 once the review
 approved; gate 1, the review itself, and the merge are human
