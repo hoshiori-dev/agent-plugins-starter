@@ -1,0 +1,26 @@
+# Pull-request hygiene: title follows Conventional Commits and the body keeps
+# the template's sections with the secrets item ticked (scripts/check_pr.ts).
+name: pr
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions: {}
+
+jobs:
+  pr:
+    name: checks / pr
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: denoland/setup-deno@v2.0.5
+        with:
+          deno-version: v2.x
+      - name: Check title and body
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: deno run --allow-read --allow-env scripts/check_pr.ts

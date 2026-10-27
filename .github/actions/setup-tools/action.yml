@@ -1,0 +1,27 @@
+name: Set up tools
+description: Installs the toolchain the justfile recipes need (deno, uv, just, pre-commit, openspec, betterleaks). Versions are pinned here; the dev container pins its own through features.
+runs:
+  using: composite
+  steps:
+    - uses: denoland/setup-deno@v2.0.5
+      with:
+        deno-version: v2.x
+        cache: true
+    - uses: astral-sh/setup-uv@v10.3.2
+    - name: Install just and pre-commit
+      shell: bash
+      run: uv tool install rust-just && uv tool install pre-commit
+    - name: Install openspec
+      shell: bash
+      run: npm install --global @fission-ai/openspec@1.15.0
+    - name: Install betterleaks
+      shell: bash
+      env:
+        VERSION: "1.9.0"
+      run: |
+        set -euo pipefail
+        url="https://github.com/betterleaks/betterleaks/releases/download/v${VERSION}/betterleaks_${VERSION}_linux_x64.tar.gz"
+        curl -sSfL "$url" -o /tmp/betterleaks.tar.gz
+        mkdir -p "$HOME/.local/bin"
+        tar -xzf /tmp/betterleaks.tar.gz -C "$HOME/.local/bin" betterleaks
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"

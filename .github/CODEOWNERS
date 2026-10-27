@@ -1,0 +1,3 @@
+# Review routing. Replace the owner when you create a repository from this
+# template; CODEOWNERS only requests review and is enforced by a ruleset.
+* @hoshiori-dev
