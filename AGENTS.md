@@ -22,9 +22,9 @@ Code, the one client whose plugin system carries them.
   propose the change on the pull request instead.
 - Commits: Conventional Commits, lowercase imperative subject, no AI or tool
   attribution trailers. Checkpoint commits are fine; `main` gets one squash.
-- Agents stop at a draft pull request. Marking ready, approving, merging,
-  tagging, and remote settings are human actions
-  (`.agents/knowledge/agent-authority.md`).
+- Agents mark a pull request ready only after the self-review in
+  `.agents/knowledge/agent-authority.md` passes; approving, merging,
+  tagging, and remote settings are human actions.
 - Nothing secret or private enters the repository, an issue, or a PR; the
   repository is public.
 
@@ -85,9 +85,9 @@ helpers of the template author, not part of the harness.
 
 Issue → `gh issue develop` branch → draft PR carrying the OpenSpec change →
 maintainer adds `spec: approved` → implement with `just check` green → agent
-reports checks green → maintainer marks ready and reviews → implementer
-archives the change on the branch → maintainer squash-merges → version bump
-and `v*` tag release.
+self-reviews and marks ready → maintainer reviews → implementer archives the
+change on the branch → maintainer squash-merges → version bump and `v*` tag
+release.
 
 ## Keep In Sync
 
