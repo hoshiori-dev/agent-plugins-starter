@@ -5,6 +5,7 @@
 //
 //   dist.ts [--tag vX.Y.Z]   with --tag, fail unless X.Y.Z equals plugin.json#version
 import { join } from "@std/path";
+import { CLIENTS } from "./lib/clients.ts";
 import { fail } from "./lib/findings.ts";
 import { loadManifest } from "./lib/plugin.ts";
 
@@ -38,6 +39,9 @@ const payload = [
   ...[...Deno.readDirSync(root)].filter((e) => e.isDirectory && e.name.startsWith("com.")).map((
     e,
   ) => e.name),
+  // The generated client files: without them the archive loads in no client
+  // that needs a pointer manifest or a converted MCP file (client-matrix.md).
+  ...CLIENTS.flatMap((c) => c.generatedFiles),
 ].filter((p) => {
   try {
     Deno.lstatSync(join(root, p));

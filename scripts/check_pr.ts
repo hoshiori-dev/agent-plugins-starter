@@ -44,7 +44,8 @@ if (!TITLE_RE.test(title)) {
 const template = readText(".github/pull_request_template.md");
 const headings = [...template.matchAll(/^## (.+)$/gm)].map((m) => m[1]);
 for (const heading of headings) {
-  if (!new RegExp(`^## ${heading}\\s*$`, "m").test(body)) {
+  const literal = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // headings are text, not patterns
+  if (!new RegExp(`^## ${literal}\\s*$`, "m").test(body)) {
     findings.add({
       file: "pull request body",
       rule: "pr-template",

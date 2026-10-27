@@ -28,6 +28,7 @@ export const CHANGES_DIR = "openspec/changes/";
 export const RECORD_MARKER = "<!-- spec-approval-record -->";
 /** The only account whose comments count as approval records: the workflow token's identity. */
 export const RECORD_AUTHOR = "github-actions[bot]";
+import { parse as parseYaml } from "@std/yaml";
 
 export interface Pull {
   state: "open" | "closed";
@@ -276,9 +277,21 @@ export async function allSkipSpecs(
       e.type === "blob" && e.path === `${CHANGES_DIR}${change}/.openspec.yaml`
     );
     if (!marker) return false;
-    if (!/^\s*skip_specs\s*:\s*true\s*$/m.test(await api.blob(marker.sha))) return false;
+    if (!skipSpecs(await api.blob(marker.sha))) return false;
   }
   return true;
+}
+
+/** True only for a parseable YAML document whose top-level `skip_specs` is the boolean true. */
+export function skipSpecs(yaml: string): boolean {
+  let doc: unknown;
+  try {
+    doc = parseYaml(yaml);
+  } catch {
+    return false;
+  }
+  return typeof doc === "object" && doc !== null &&
+    (doc as { skip_specs?: unknown }).skip_specs === true;
 }
 
 async function refuse(

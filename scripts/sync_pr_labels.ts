@@ -145,12 +145,9 @@ try {
     console.log("dry run; pass --apply to write");
     Deno.exit(0);
   }
-  for (const l of plan.remove) {
-    gh(["api", "-X", "DELETE", `repos/${repo}/${issue}/labels/${encodeURIComponent(l)}`]);
-  }
-  for (const l of plan.add) {
-    gh(["api", "-X", "POST", `repos/${repo}/${issue}/labels`, "-f", `labels[]=${l}`]);
-  }
+  // The record first: a label without a record is repaired by the next run, a
+  // record without a label is restored by it, but a label written before a failed
+  // record would stand as an approval nothing vouches for.
   if (decision.record) {
     if (decision.record.id === undefined) {
       gh([
@@ -171,6 +168,12 @@ try {
         `body=${decision.record.body}`,
       ]);
     }
+  }
+  for (const l of plan.remove) {
+    gh(["api", "-X", "DELETE", `repos/${repo}/${issue}/labels/${encodeURIComponent(l)}`]);
+  }
+  for (const l of plan.add) {
+    gh(["api", "-X", "POST", `repos/${repo}/${issue}/labels`, "-f", `labels[]=${l}`]);
   }
   console.log(`applied ${plan.add.length + plan.remove.length} label change(s)`);
 } catch (error) {

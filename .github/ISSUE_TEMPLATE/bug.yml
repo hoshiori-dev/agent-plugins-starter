@@ -6,7 +6,13 @@ body:
     id: client
     attributes:
       label: Client
-      options: ["Claude Code", "Codex", "Antigravity", "Other Agent Plugins client", "Repository tooling"]
+      options: [
+        "Claude Code",
+        "Codex",
+        "Antigravity",
+        "Other Agent Plugins client",
+        "Repository tooling",
+      ]
     validations:
       required: true
   - type: textarea

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/devcontainers/spec/refs/heads/main/schemas/devContainer.schema.json",
-	"name": "Agent Plugins",
-	"image": "mcr.microsoft.com/devcontainers/base:resolute",
+  "name": "Agent Plugins",
+  "image": "mcr.microsoft.com/devcontainers/base:resolute",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": true
