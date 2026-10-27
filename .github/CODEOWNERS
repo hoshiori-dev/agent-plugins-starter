@@ -1,4 +1,6 @@
 # Review routing. Replace the owner when you create a repository from this
 # template. CODEOWNERS only requests review; the ruleset does not require a
 # code-owner approval (solo maintainer), see .agents/knowledge/github/platform-settings.md.
-* @hoshiori-dev
+# The owner must be a user or a team (@org/team) with write access; an
+# organization login is rejected as "Unknown owner".
+* @ryan-minato
