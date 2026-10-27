@@ -9,7 +9,7 @@ development and every version is a tag of `main`.
 
 | Branch | Meaning | Accepts merges from | Protection |
 |---|---|---|---|
-| `main` | releasable; every commit passed `checks / gate` | short-lived branches by squash merge | ruleset once enabled (see `github/platform-settings.md`) |
+| `main` | releasable; every commit passed `checks / gate` | short-lived branches by squash merge | ruleset `main`: PR required, checks required, no force push, no bypass (see `github/platform-settings.md`) |
 
 ## Short-lived branches
 
