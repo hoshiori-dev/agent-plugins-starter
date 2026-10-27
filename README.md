@@ -35,8 +35,8 @@ Everything an agent needs to work in the repository starts at `AGENTS.md`.
 | Client | Local development | Distribution |
 |---|---|---|
 | Codex | `codex plugin marketplace add .` then `codex plugin add agent-plugins-starter@agent-plugins-starter` | the repository is a marketplace (`.agents/plugins/marketplace.json`) |
-| Claude Code | `claude --plugin-dir .` | `claude plugin marketplace add <owner>/<repo>` style install from the repository |
-| Antigravity | `.agents/plugins.json` registers `com.google.antigravity/` for the workspace | `agy plugin install <clone>/com.google.antigravity` |
+| Claude Code | `claude --plugin-dir .` | `/plugin marketplace add hoshiori-dev/agent-plugins-starter`, then `/plugin install agent-plugins-starter@agent-plugins-starter` (the repository is a marketplace via `.claude-plugin/marketplace.json`) |
+| Antigravity | the symlink `.agents/plugins/agent-plugins-starter` registers `com.google.antigravity/` for the workspace | `agy plugin install <clone>/com.google.antigravity` |
 
 The example MCP server needs [Deno](https://deno.com) on the user's machine.
 Details, verified dates, and known limitations per client are in
@@ -51,9 +51,10 @@ just clients-validate   # validate with the installed client CLIs (dev container
 ```
 
 Changes to shipped behaviour go through [OpenSpec](https://github.com/Fission-AI/OpenSpec)
-changes under `openspec/`; `openspec/specs/<catalog>/spec.md` holds the rules
-of each catalog and `openspec/specs/<catalog>/<name>/spec.md` describes each
-shipped entry. See `CONTRIBUTING.md` for the pull-request flow.
+changes under `openspec/`. Specs are organised in three catalogs, `skill`,
+`mcp`, and `agent`: `openspec/specs/<catalog>/spec.md` holds the rules of the
+catalog and `openspec/specs/<catalog>/<name>/spec.md` describes each shipped
+entry. See `CONTRIBUTING.md` for the pull-request flow.
 
 ## Release
 

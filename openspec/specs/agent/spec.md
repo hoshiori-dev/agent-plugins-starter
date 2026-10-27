@@ -37,8 +37,9 @@ same behaviour in every version so the agent acts the same wherever it runs.
 
 ### Requirement: Read-only by default
 An agent SHALL request only read tools unless its spec states why it must
-write.
+write; where a client's agent format has no tool restriction field (Codex),
+the instructions SHALL state that the agent reads only.
 
 #### Scenario: Agent spec without a write justification
 - **WHEN** an agent's spec names no write operation
-- **THEN** every client version lists read-only tools
+- **THEN** every client version that can restrict tools lists read-only tools, and every version's instructions forbid modifying files
