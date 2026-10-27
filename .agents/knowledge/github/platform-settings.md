@@ -7,7 +7,7 @@ conventions until the owner enables them, then records the date here.
 
 | Setting | Intended value | Tier | Readback |
 |---|---|---|---|
-| Ruleset on `main` | require a PR (0 approvals: solo maintainer; stale reviews dismissed; threads resolved; squash only); required checks `checks / gate`, `secrets / scan`, `checks / pr`, `checks / spec-archived` (added to the ruleset once the `pr` workflow on `main` reports it); block deletion and force push; no bypass actors, so the owner also merges through PRs | enabled 2026-10-27 (ruleset id 25938075) | `gh api repos/{owner}/{repo}/rulesets` → `main`, `active` |
+| Ruleset on `main` | require a PR (0 approvals: solo maintainer; stale reviews dismissed; threads resolved; squash only); required checks `checks / gate`, `secrets / scan`, `checks / pr`, `checks / spec-archived` (required since 2026-10-27, after #7 merged); block deletion and force push; no bypass actors, so the owner also merges through PRs | enabled 2026-10-27 (ruleset id 25938075) | `gh api repos/{owner}/{repo}/rulesets` → `main`, `active` |
 | Merge methods | squash only; delete head branch on merge; squash commit = PR title + PR body | enabled 2026-10-27 | `gh repo view --json squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed,deleteBranchOnMerge` → `true,false,false,true` |
 | Secret scanning + push protection | enabled | enabled (GitHub default for this public repository, read 2026-10-27) | `gh api repos/{owner}/{repo} --jq .security_and_analysis` → both `enabled` |
 | Private vulnerability reporting | enabled (`SECURITY.md` sends reporters there) | enabled 2026-10-27 | `gh api repos/{owner}/{repo}/private-vulnerability-reporting` → `{"enabled":true}` |
