@@ -1,6 +1,10 @@
-# The quality gate. Every job runs a justfile recipe that also runs locally;
-# .agents/knowledge/github/checks.md maps job names to recipes. Job names are
-# what rulesets require, so keep them unique across workflows.
+# The full quality suite, on pull requests and on pushes to main. A pull
+# request runs it on the merge result of its latest commit; a new push cancels
+# the run in progress. Every job runs a justfile recipe that also runs locally
+# (`just check` is the union); .agents/knowledge/github/checks.md maps job
+# names to recipes. Job names are what rulesets require, so keep them unique
+# across workflows. Secret scanning (secret.yml) and the fast per-push subset
+# (push.yml) are separate workflows.
 name: checks
 
 on:
@@ -53,23 +57,13 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-tools
       - run: just spec-check
-  secrets:
-    name: checks / secrets
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-tools
-      - run: just secrets
   gate:
-    # The aggregator: the only job a ruleset needs to require. A skipped job
-    # reports success, so this job fails on failure or cancellation only.
+    # The aggregator for this workflow; a ruleset requires it together with
+    # `secrets / scan` and `checks / pr`. A skipped job reports success, so
+    # this job fails on failure or cancellation only.
     name: checks / gate
     if: always()
-    needs: [lint, test, plugin, spec, secrets]
+    needs: [lint, test, plugin, spec]
     runs-on: ubuntu-latest
     steps:
       - name: All required jobs succeeded

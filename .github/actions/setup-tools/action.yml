@@ -1,5 +1,15 @@
 name: Set up tools
-description: Installs the toolchain the justfile recipes need (deno, uv, just, pre-commit, openspec, betterleaks). Versions are pinned here; the dev container pins its own through features.
+description: Installs the toolchain the justfile recipes need (deno, uv, just, pre-commit, openspec, betterleaks). Versions are pinned here; the dev container pins its own through features. The optional tools are skipped by workflows whose recipes do not need them.
+inputs:
+  pre-commit:
+    description: Install pre-commit ("true" or "false").
+    default: "true"
+  openspec:
+    description: Install openspec ("true" or "false").
+    default: "true"
+  betterleaks:
+    description: Install betterleaks ("true" or "false").
+    default: "true"
 runs:
   using: composite
   steps:
@@ -8,13 +18,19 @@ runs:
         deno-version: v2.x
         cache: true
     - uses: astral-sh/setup-uv@v10.3.2
-    - name: Install just and pre-commit
+    - name: Install just
       shell: bash
-      run: uv tool install rust-just && uv tool install pre-commit
+      run: uv tool install rust-just
+    - name: Install pre-commit
+      if: inputs.pre-commit == 'true'
+      shell: bash
+      run: uv tool install pre-commit
     - name: Install openspec
+      if: inputs.openspec == 'true'
       shell: bash
       run: npm install --global @fission-ai/openspec@1.15.0
     - name: Install betterleaks
+      if: inputs.betterleaks == 'true'
       shell: bash
       env:
         VERSION: "1.9.0"

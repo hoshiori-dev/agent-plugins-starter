@@ -74,6 +74,7 @@ helpers of the template author, not part of the harness.
 | Check | Command |
 |---|---|
 | Everything CI runs | `just check` |
+| The Deno-only subset the push workflow runs | `just check-fast` |
 | Generated client files are current | `just gen --check` (regenerate: `just gen`) |
 | Plugin layout, wiring, catalog ↔ implementation | `just validate` |
 | Harness links, recipes, budgets, symlinks | `just harness-check` |
@@ -95,7 +96,7 @@ and `v*` tag release.
 |---|---|
 | `plugin.json`, `mcp.json`, or any `com.*/agents/` file | run `just gen`; commit the generated files |
 | A skill, server, or agent is added or removed | its spec under `openspec/specs/<catalog>/<name>/`, every enabled client's agent file, `just gen` |
-| A `justfile` recipe or CI job | the Validation table above, `.agents/knowledge/github/checks.md`, `.github/workflows/checks.yml` |
+| A `justfile` recipe or CI job | the Validation table above, `.agents/knowledge/github/checks.md`, the job's workflow under `.github/workflows/` |
 | A client's loading behaviour (new version) | `.agents/knowledge/client-matrix.md` table and verification log; the matching rows of `.agents/knowledge/compatibility-watch.md` |
 | A check, generator branch, or document exists only to work around a client or spec gap | add a row to `.agents/knowledge/compatibility-watch.md` |
 | OpenSpec version | `openspec init --tools agents --force`, `.agents/knowledge/spec-workflow.md` |

@@ -29,7 +29,8 @@ the git hooks. Without the container you need deno 2.x, uv (for `just` and
 - Commit messages and PR titles follow Conventional Commits with a lowercase
   subject (`feat(skills): add release-notes skill`).
 - Never edit generated files; the hooks and CI fail on drift.
-- Never commit secrets; betterleaks runs on every commit and in CI.
+- Never commit secrets; betterleaks runs on every commit locally, and CI
+  scans every pushed commit.
 
 ## Reporting security issues
 

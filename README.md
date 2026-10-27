@@ -48,6 +48,7 @@ Details, verified dates, and known limitations per client are in
 ```bash
 just gen        # regenerate client files from plugin.json, mcp.json, com.*/agents/
 just check      # everything CI runs: lint, tests, plugin and harness checks, specs, secrets
+just check-fast # the Deno-only subset that runs on every push
 just clients-validate   # validate with the installed client CLIs (dev container only)
 ```
 

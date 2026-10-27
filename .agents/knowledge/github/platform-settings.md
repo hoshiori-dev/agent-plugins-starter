@@ -7,7 +7,7 @@ conventions until the owner enables them.
 
 | Setting | Intended value | Tier | Readback |
 |---|---|---|---|
-| Ruleset on `main` | require a PR; required checks `checks / gate` and `checks / pr`; no bypass actors | convention until enabled (public repo: free) | `gh api repos/{owner}/{repo}/rulesets` |
+| Ruleset on `main` | require a PR; required checks `checks / gate`, `secrets / scan`, and `checks / pr`; no bypass actors | convention until enabled (public repo: free) | `gh api repos/{owner}/{repo}/rulesets` |
 | Merge methods | squash only; delete head branch on merge | convention | `gh repo view --json squashMergeAllowed,deleteBranchOnMerge` |
 | Secret scanning + push protection | enabled | convention (free on public repositories) | `gh api repos/{owner}/{repo} --jq .security_and_analysis` |
 | Actions default token | read-only; workflows request `contents: write` per job | convention | Settings → Actions → General |

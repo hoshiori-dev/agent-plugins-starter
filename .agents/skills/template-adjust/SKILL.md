@@ -52,9 +52,10 @@ Facts live in one place: `scripts/lib/clients.ts`.
 ## Thicken or thin a layer
 
 - Checks: add or remove a recipe in the `justfile`, its job in
-  `.github/workflows/checks.yml`, its row in
-  `.agents/knowledge/github/checks.md`, and the `gate` job's `needs` list,
-  in one change.
+  `.github/workflows/checks.yml` and the `gate` job's `needs` list, its row
+  in `.agents/knowledge/github/checks.md`, and, for a check that needs only
+  Deno and just, its place in `check-fast`, in one change. Secret scanning
+  keeps its own workflow (`secret.yml`).
 - Hooks: `.pre-commit-config.yaml`; keep every hook under a few seconds so
   nobody bypasses it. Secret scanning stays.
 - Authority: edit `.agents/knowledge/agent-authority.md` with the user's

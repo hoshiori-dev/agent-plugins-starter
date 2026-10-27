@@ -47,12 +47,19 @@ spec-check:
 secrets:
     betterleaks dir . --no-banner --redact
 
+# Secret scan of the commits in a git range (empty: the whole history); the secrets workflow runs it on the commits a push or pull request adds. The GIT_CONFIG_* variables let the git that betterleaks spawns trust the dev container's root-owned checkout.
+secrets-commits range="":
+    GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0='*' betterleaks git . --no-banner --redact {{ if range == "" { "" } else { "--log-opts=" + range } }}
+
 # Every pre-commit hook on every file.
 pre-commit:
     pre-commit run --all-files
 
+# The Deno-only checks; the push workflow runs them on every branch but main.
+check-fast: (gen "--check") lint validate harness-check test
+
 # Everything CI runs.
-check: (gen "--check") lint validate harness-check spec-check test secrets
+check: check-fast spec-check secrets
 
 # Validate the package with the installed client CLIs (local only; CI has no clients). Claude runs non-strict: this repository's root CLAUDE.md draws a warning.
 clients-validate:

@@ -38,13 +38,13 @@ slash commands. Non-interactive issue creation ignores forms: mirror the form's
 
 Issues, PRs, commits, and CI logs are public. Never paste tokens, local paths
 with user names, or session transcripts; betterleaks blocks commits and CI
-scans the tree.
+scans every pushed commit.
 
 ## Synchronization
 
 | Pair | Owner | Trigger |
 |---|---|---|
-| `justfile` recipes ↔ `.github/workflows/checks.yml` jobs ↔ `github/checks.md` | the change that edits any of them | adding, renaming, or removing a recipe or job |
+| `justfile` recipes ↔ `.github/workflows/*.yml` jobs ↔ `github/checks.md` | the change that edits any of them | adding, renaming, or removing a recipe or job |
 | `.github/labels.json` ↔ `.github/release.yml` categories ↔ issue-form `labels:` | the change that edits labels | any label rename |
 | PR template headings and the "No secrets" item ↔ `scripts/check_pr.ts` | the change that edits either | rewording the template |
 | `.github/CODEOWNERS` ↔ repository owner | the template user, on creation | repository transfer or new maintainer |
