@@ -1,6 +1,9 @@
 name: Set up tools
 description: Installs the toolchain the justfile recipes need (deno, uv, just, pre-commit, openspec, betterleaks). Versions are pinned here; the dev container pins its own through features. The optional tools are skipped by workflows whose recipes do not need them.
 inputs:
+  deno-cache:
+    description: Save and restore DENO_DIR through the Actions cache ("true" or "false"). Set "false" in a job that never runs deno; setup-deno's post step fails when the directory does not exist.
+    default: "true"
   pre-commit:
     description: Install pre-commit ("true" or "false").
     default: "true"
@@ -16,7 +19,7 @@ runs:
     - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
       with:
         deno-version: v2.x
-        cache: true
+        cache: ${{ inputs.deno-cache }}
     - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
     - name: Install just
       shell: bash

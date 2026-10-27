@@ -64,6 +64,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-tools
+        with:
+          deno-cache: "false"
       - run: just spec-check
   gate:
     # The aggregator for this workflow; a ruleset requires it together with
