@@ -1,7 +1,7 @@
 ---
 name: example-skill
 description: Verifies that the agent-plugins-starter plugin is loaded in the current client by calling its example MCP tool and checking which plugin components are visible. Use when the user asks to test, verify, or smoke-check the plugin installation, or asks whether the example plugin works here.
-license: MIT
+license: Apache-2.0
 metadata:
   author: hoshiori-dev
 ---

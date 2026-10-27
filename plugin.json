@@ -9,7 +9,7 @@
   },
   "homepage": "https://github.com/hoshiori-dev/agent-plugins-starter",
   "repository": "https://github.com/hoshiori-dev/agent-plugins-starter",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": ["agent-plugins", "template", "skills", "mcp", "claude-code", "codex", "antigravity"],
   "extensions": {
     "com.openai": {
