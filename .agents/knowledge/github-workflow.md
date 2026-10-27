@@ -25,8 +25,8 @@ check jobs in `.agents/knowledge/github/checks.md`.
 3. Wait for `spec: approved` before writing tasks or code for a spec-carrying
    change (`.agents/knowledge/spec-workflow.md`).
 4. Implement; keep `just check` green; push the single branch.
-5. Mark ready only when the checklist is ticked and checks are green
-   (`.agents/knowledge/agent-authority.md` says who may).
+5. Self-review, then mark ready when the checklist is ticked and checks are
+   green (`.agents/knowledge/agent-authority.md` sets the bar and says who may).
 6. Review, archive the change on the branch, squash-merge; the branch is
    deleted on merge.
 
