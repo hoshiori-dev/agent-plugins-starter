@@ -38,6 +38,12 @@ source of truth and this table is the map.
 Not in CI: `just clients-validate` needs the client CLIs (Claude Code, Codex,
 Antigravity) and runs in the dev container only.
 
+Every `uses:` is pinned to a commit SHA with the version tag in a trailing
+comment, and every checkout sets `persist-credentials: false`; Dependabot
+(`.github/dependabot.yml`) bumps SHA and comment together. When adding an
+action, resolve the tag with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>`
+and pin the same way.
+
 Toolchain versions for CI live in `.github/actions/setup-tools/action.yml`;
 the dev container pins its own in `.devcontainer/devcontainer.json`. When one
 changes, check the other.
