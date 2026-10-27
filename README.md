@@ -36,7 +36,7 @@ Everything an agent needs to work in the repository starts at `AGENTS.md`.
 |---|---|---|
 | Codex | `codex plugin marketplace add .` then `codex plugin add agent-plugins-starter@agent-plugins-starter` | the repository is a marketplace (`.agents/plugins/marketplace.json`) |
 | Claude Code | `claude --plugin-dir .` | `/plugin marketplace add hoshiori-dev/agent-plugins-starter`, then `/plugin install agent-plugins-starter@agent-plugins-starter` (the repository is a marketplace via `.claude-plugin/marketplace.json`) |
-| Antigravity | the symlink `.agents/plugins/agent-plugins-starter` registers `com.google.antigravity/` for the workspace | `agy plugin install <clone>/com.google.antigravity` |
+| Antigravity | the symlink `.agents/plugins/agent-plugins-starter` registers `com.google.antigravity/` for the workspace | `agy plugin install https://github.com/hoshiori-dev/agent-plugins-starter/tree/main/com.google.antigravity` (the package directory; the bare repository URL yields skills only) |
 
 The example MCP server needs [Deno](https://deno.com) on the user's machine.
 Details, verified dates, and known limitations per client are in
