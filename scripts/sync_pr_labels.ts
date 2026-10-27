@@ -112,6 +112,10 @@ const github: Api = {
         body: c.body ?? "",
       })),
     ),
+  blob: (sha) =>
+    Promise.resolve(
+      api<{ content: string }>(`git/blobs/${encodeURIComponent(sha)}`).content.replaceAll("\n", ""),
+    ).then((b64) => new TextDecoder().decode(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)))),
   permission: (login) =>
     Promise.resolve(
       api<{ permission: string }>(`collaborators/${encodeURIComponent(login)}/permission`)
@@ -119,10 +123,15 @@ const github: Api = {
     ),
 };
 
-let currentLabels: string[] | null = null;
+// One read of the pull request per run: decide() and the plan see the same labels and head.
+let pullOnce: Promise<Pull> | null = null;
+const readPull = github.pull;
+github.pull = () => (pullOnce ??= readPull());
+
+let current: Pull | null = null;
 try {
   const pull = await github.pull();
-  currentLabels = pull.labels;
+  current = pull;
   const decision = await decide(github, event);
   const plan = labelPlan(pull.labels, decision);
   const shown = decision.leave ? "untouched" : decision.state ?? "no state label";
@@ -166,9 +175,19 @@ try {
   console.log(`applied ${plan.add.length + plan.remove.length} label change(s)`);
 } catch (error) {
   console.error(`sync_pr_labels: ${(error as Error).message}`);
-  if (apply && currentLabels?.includes(APPROVED)) {
+  // Fail safe on an open pull request only; a 404 on the delete means the label is already gone.
+  if (apply && current?.state === "open" && current.labels.includes(APPROVED)) {
     try {
-      gh(["api", "-X", "DELETE", `repos/${repo}/${issue}/labels/${encodeURIComponent(APPROVED)}`]);
+      try {
+        gh([
+          "api",
+          "-X",
+          "DELETE",
+          `repos/${repo}/${issue}/labels/${encodeURIComponent(APPROVED)}`,
+        ]);
+      } catch (e) {
+        if (!String((e as Error).message).includes("HTTP 404")) throw e;
+      }
       gh(["api", "-X", "POST", `repos/${repo}/${issue}/labels`, "-f", `labels[]=${PENDING}`]);
       console.error(`replaced ${APPROVED} by ${PENDING} because the state could not be decided`);
     } catch (inner) {

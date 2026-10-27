@@ -62,7 +62,8 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
 
 The state label is maintained by the `pr-labels` workflow from the pull
 request's tree, never by hand: `spec: skipped` (nothing under
-`openspec/changes/` touched), `spec: pending` (an unarchived change without a
+`openspec/changes/` touched, or every unarchived change sets `skip_specs:
+true`; the archive gate still applies), `spec: pending` (an unarchived change without a
 standing approval), `spec: approved` (added by a write-permission account,
 recorded, package unchanged), `spec: archived` (the change is archived in this
 pull request). `just pr-labels <n>` prints the decision without writing.

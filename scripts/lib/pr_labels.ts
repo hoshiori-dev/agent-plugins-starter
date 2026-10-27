@@ -62,6 +62,8 @@ export interface Api {
   labelEvents(): Promise<LabelEvent[]>;
   comments(): Promise<Comment[]>;
   permission(login: string): Promise<string>;
+  /** Text of a blob by sha; used for each change's `.openspec.yaml`. */
+  blob(sha: string): Promise<string>;
 }
 
 /** The event that started the run, when it was a label being added or removed. */
@@ -193,6 +195,16 @@ export async function decide(api: Api, event: Event | null): Promise<Decision> {
       : { state: null, reason: "no unarchived change and no archived one touched" };
   }
 
+  // A change whose .openspec.yaml sets skip_specs: true has no specs to
+  // approve (spec-workflow.md): when every unarchived change says so, the pull
+  // request is spec-less and waits for the archive only.
+  if (await allSkipSpecs(api, tree.entries, changes)) {
+    return {
+      state: SKIPPED,
+      reason: `unarchived change(s) ${changes.join(", ")} all set skip_specs: true`,
+    };
+  }
+
   const hash = await packageHash(tree.entries, changes);
   const records = (await api.comments()).map(parseRecord).filter((r): r is Record => r !== null);
   const record = records.sort((a, b) => b.id - a.id)[0];
@@ -245,6 +257,22 @@ export async function decide(api: Api, event: Event | null): Promise<Decision> {
   };
 }
 
+/** True when every unarchived change carries `.openspec.yaml` with `skip_specs: true`. */
+export async function allSkipSpecs(
+  api: Api,
+  entries: TreeEntry[],
+  changes: string[],
+): Promise<boolean> {
+  for (const change of changes) {
+    const marker = entries.find((e) =>
+      e.type === "blob" && e.path === `${CHANGES_DIR}${change}/.openspec.yaml`
+    );
+    if (!marker) return false;
+    if (!/^\s*skip_specs\s*:\s*true\s*$/m.test(await api.blob(marker.sha))) return false;
+  }
+  return true;
+}
+
 async function refuse(
   api: Api,
   event: Event,
@@ -255,7 +283,9 @@ async function refuse(
     return "the event names an invalid account or commit";
   }
   if (pull.head !== event.head) return "the head is no longer the commit the event named";
-  if (!approval || approval.actor !== event.sender) {
+  // The timeline may lag behind the event by a moment: an absent entry is
+  // accepted (the event itself is the evidence), a different actor is not.
+  if (approval && approval.actor !== event.sender) {
     return `the latest adding of ${APPROVED} by a person is not this event`;
   }
   const permission = await api.permission(event.sender);

@@ -35,6 +35,7 @@ interface Fixture {
   events?: LabelEvent[];
   comments?: Comment[];
   permission?: string;
+  blobs?: Record<string, string>;
 }
 function fake(f: Fixture): Api {
   return {
@@ -51,6 +52,7 @@ function fake(f: Fixture): Api {
     labelEvents: () => Promise.resolve(f.events ?? []),
     comments: () => Promise.resolve(f.comments ?? []),
     permission: () => Promise.resolve(f.permission ?? "write"),
+    blob: (sha) => Promise.resolve(f.blobs?.[sha] ?? ""),
   };
 }
 const approveEvent: Event = {
@@ -207,6 +209,37 @@ Deno.test("a record comment from anyone but the workflow identity is ignored", a
     assertStringIncludes(d.reason, "no approval record");
     assertEquals(d.record, undefined, "a forged record is never edited");
   }
+});
+
+Deno.test("a change whose .openspec.yaml sets skip_specs: true is spec-less", async () => {
+  const marker = blob("openspec/changes/add-thing/.openspec.yaml", "5".repeat(40));
+  const skipped = fake({
+    entries: [...ARCHIVE, ...CHANGE, marker],
+    blobs: { ["5".repeat(40)]: "schema: spec-driven\nskip_specs: true\n" },
+  });
+  assertEquals((await decide(skipped, null)).state, SKIPPED);
+  const notSkipped = fake({
+    entries: [...ARCHIVE, ...CHANGE, marker],
+    blobs: { ["5".repeat(40)]: "skip_specs: false\n" },
+  });
+  assertEquals((await decide(notSkipped, null)).state, PENDING);
+  const second = blob("openspec/changes/other/proposal.md", "6".repeat(40));
+  const mixed = fake({
+    entries: [...ARCHIVE, ...CHANGE, marker, second],
+    blobs: { ["5".repeat(40)]: "skip_specs: true\n" },
+  });
+  assertEquals(
+    (await decide(mixed, null)).state,
+    PENDING,
+    "one change without the marker keeps the gate",
+  );
+});
+
+Deno.test("an approval whose timeline entry has not appeared yet is still recorded", async () => {
+  const d = await decide(fake({ events: [] }), approveEvent);
+  assertEquals(d.state, APPROVED);
+  const other = await decide(fake({ events: [approvedBy("someone-else")] }), approveEvent);
+  assertEquals(other.state, PENDING);
 });
 
 Deno.test("archiving is recognised whatever status the archive files carry", async () => {
