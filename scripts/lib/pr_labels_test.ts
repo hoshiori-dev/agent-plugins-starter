@@ -162,6 +162,35 @@ Deno.test("a standing approval survives unrelated pushes and dies when the packa
   );
 });
 
+Deno.test("a record approves only the person whose adding of the label stands", async () => {
+  const hash = await packageHash([...ARCHIVE, ...CHANGE], ["add-thing"]);
+  const record: Comment = {
+    id: 7,
+    body: recordBody("approved", HEAD, "maintainer", hash),
+    author: RECORD_AUTHOR,
+  };
+  const events: LabelEvent[] = [
+    approvedBy("maintainer", 10),
+    { id: 11, event: "unlabeled", label: APPROVED, actor: "maintainer" },
+    approvedBy("triager", 12),
+  ];
+  const d = await decide(fake({ events, comments: [record], pull: { labels: [APPROVED] } }), null);
+  assertEquals(d.state, PENDING);
+  assertStringIncludes(d.reason, "record was made for maintainer");
+  assertEquals(
+    parseRecord({ id: 7, body: d.record!.body, author: RECORD_AUTHOR })?.status,
+    "withdrawn",
+  );
+  // The same person removing and re-adding keeps their own record.
+  const own = [approvedBy("maintainer", 10), {
+    id: 11,
+    event: "unlabeled" as const,
+    label: APPROVED,
+    actor: "maintainer",
+  }, approvedBy("maintainer", 12)];
+  assertEquals((await decide(fake({ events: own, comments: [record] }), null)).state, APPROVED);
+});
+
 Deno.test("a person removing spec: approved, or a label without a record, means pending", async () => {
   const hash = await packageHash([...ARCHIVE, ...CHANGE], ["add-thing"]);
   const record: Comment = {

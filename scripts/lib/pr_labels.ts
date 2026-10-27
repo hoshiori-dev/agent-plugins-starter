@@ -238,7 +238,15 @@ export async function decide(api: Api, event: Event | null): Promise<Decision> {
   if (!approval) problems.push(`no standing adding of ${APPROVED} by a person`);
   if (!record) problems.push("no approval record comment");
   else if (record.status !== "approved") problems.push("the approval record is withdrawn");
-  else if (record.hash !== hash) {
+  // The record belongs to the person whose adding of the label stands. A
+  // different person's later adding (say a triage role re-adding after the
+  // maintainer removed it) is a new approval attempt that only its own run,
+  // with its permission check, may record.
+  else if (approval && approval.actor !== record.by) {
+    problems.push(
+      `${APPROVED} now stands from ${approval.actor}, but the record was made for ${record.by}`,
+    );
+  } else if (record.hash !== hash) {
     problems.push(`the approval package changed since ${record.commit}`);
   }
   if (problems.length === 0) {
