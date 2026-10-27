@@ -42,4 +42,5 @@ symlinks (W6) and generated pointer files (W7); Codex plugins ship no agents
 | 2026-10-27 | `agy plugin validate --strict com.google.antigravity` and `agy plugin install` of the package | skills, agents, mcpServers all processed; symlinks copied |
 | 2026-10-27 | workspace registration through the symlink `.agents/plugins/agent-plugins-starter -> ../../com.google.antigravity` | `agy --print` in the repository lists the plugin, the `echo` MCP tool, and the `example-agent` subagent; the relative server path in `mcp_config.json` resolves |
 | 2026-10-27 | `.agents/plugins.json` with `{"path": ".", "include_only": [...]}` | not picked up by the CLI session; replaced by the symlink above |
+| 2026-10-27 | `agy plugin install https://github.com/<owner>/<repo>/tree/main/com.google.antigravity` | the CLI clones the repository and installs the subdirectory (it reported the subdirectory missing because the remote held only the initial commit at the time); re-verify after the first push |
 | 2026-10-27 | `agy plugin validate --strict` on the root | fails only because the root `mcp.json`/`$schema` pair is read as the flagged spec mode; the package validates strictly |
