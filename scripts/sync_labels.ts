@@ -20,6 +20,12 @@ for (const label of wanted) {
   if (!/^[0-9a-fA-F]{6}$/.test(label.color)) {
     fail(`.github/labels.json: label "${label.name}" color must be 6 hex digits without #`);
   }
+  // GitHub rejects longer descriptions with HTTP 422 after the plan was printed.
+  if (label.description.length > 100) {
+    fail(
+      `.github/labels.json: label "${label.name}" description is ${label.description.length} characters; GitHub allows 100`,
+    );
+  }
 }
 
 function gh(args: string[]): string {
