@@ -78,6 +78,7 @@ helpers of the template author, not part of the harness.
 | Plugin layout, wiring, catalog ↔ implementation | `just validate` |
 | Harness links, recipes, budgets, symlinks | `just harness-check` |
 | Specs and changes, strict | `just spec-check` |
+| No unarchived OpenSpec change (merge gate) | `just spec-archived` |
 | Scripts and the MCP smoke test | `just test` |
 | Package validity in the real clients (local only) | `just clients-validate` |
 
