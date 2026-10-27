@@ -13,7 +13,6 @@
     "include": [
       "scripts/",
       "mcp/",
-      ".agents/skills/template-migrate/scripts/",
       "deno.json"
     ],
     "lineWidth": 100
@@ -21,8 +20,7 @@
   "lint": {
     "include": [
       "scripts/",
-      "mcp/",
-      ".agents/skills/template-migrate/scripts/"
+      "mcp/"
     ],
     "rules": {
       "exclude": [
@@ -33,8 +31,7 @@
   "test": {
     "include": [
       "scripts/",
-      "mcp/",
-      ".agents/skills/template-migrate/scripts/"
+      "mcp/"
     ]
   }
 }

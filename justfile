@@ -25,7 +25,7 @@ fmt:
 lint:
     deno fmt --check
     deno lint
-    deno check scripts/*.ts scripts/lib/*.ts mcp/*/*.ts .agents/skills/template-migrate/scripts/*.ts
+    deno check scripts/*.ts scripts/lib/*.ts mcp/*/*.ts
 
 # Unit tests and the MCP smoke test.
 test:
