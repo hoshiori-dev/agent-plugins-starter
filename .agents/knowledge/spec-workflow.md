@@ -44,14 +44,16 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
 3. **Implement**: `openspec-apply-change`, one task at a time, `just check`
    green between tasks; `just gen` after any change to `plugin.json`,
    `mcp.json`, or an agents directory.
-4. **Gate 2, implementation acceptance**: the agent reports checks green and
-   the maintainer marks the PR ready; review happens on the PR per
+4. **Gate 2, implementation acceptance**: the agent self-reviews the finished
+   change and marks the PR ready (`.agents/knowledge/agent-authority.md`
+   sets the bar); the maintainer reviews on the PR per
    `.agents/knowledge/github-workflow.md`.
 5. **Freeze**: the implementer archives on the PR branch with
    `openspec-archive-change` after approval and before merge; the archive
    commit is the frozen record. A commit after it reopens the deliberation.
 
-Agents may run steps 1 and 3 and prepare 4 and 5; approvals are human
+Agents run steps 1, 3, and 4 up to marking ready, and step 5 once the review
+approved; gate 1, the review itself, and the merge are human
 (`.agents/knowledge/agent-authority.md`).
 
 ## Update triggers

@@ -43,9 +43,13 @@ Area labels: `area: skills | mcp | agents | harness`.
 2. Self-review per `.agents/knowledge/agent-authority.md`: one read of the
    whole diff against the issue and the spec; fix only what changes
    correctness, scope, or reviewability; no style or refactoring pass.
-3. `gh pr ready <n>`, then report to the human: checks, what was verified in
-   which client, what the self-review changed, and anything left. CODEOWNERS
-   requests the maintainer's review; approving and merging stay human.
+3. `gh pr ready <n>`, then hand off: one PR comment headed `Ready for review`
+   (what changed, what the self-review changed, where to start) and the same
+   report to the human in the session, with checks and what was verified in
+   which client. CODEOWNERS requests every listed owner except the author, so
+   with the maintainer's own account the comment is the request
+   (`.agents/knowledge/agent-authority.md`, Handoff). Approving and merging
+   stay human.
 4. After the maintainer's review, archive the OpenSpec change on the branch
    (`openspec-archive-change`), or confirm `spec: skipped` for a spec-less
    change, and report once more.

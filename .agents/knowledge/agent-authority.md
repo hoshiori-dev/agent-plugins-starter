@@ -39,6 +39,19 @@ refactor adjacent code; such thoughts become at most an optional follow-up
 note in the PR. One pass, then `gh pr ready`: the maintainer's review is the
 second pair of eyes, not a second self-review.
 
+## Handoff to the reviewer
+
+Marking ready is not yet a handoff. After `gh pr ready`, the agent posts one
+comment on the PR headed `Ready for review` that names what changed, what the
+self-review changed, and where to start reading, and reports the same in the
+session. CODEOWNERS requests a review from every listed owner except the PR
+author, so when the agent works through the maintainer's own account nobody
+is requested automatically: the comment and the session report are the
+handoff, and the maintainer's queue is
+`gh pr list --search "is:open draft:false review:none"`. A repository with a
+second maintainer lists that account in `.github/CODEOWNERS`, which makes the
+request automatic.
+
 ## Gates
 
 | Gate | Meaning | Owner |
