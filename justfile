@@ -43,6 +43,10 @@ harness-check:
 spec-check:
     openspec validate --all --strict --no-interactive
 
+# Unarchived OpenSpec changes: exit 1 while one exists (the pr workflow then withholds the `checks / spec-archived` check and the ruleset blocks the merge).
+spec-archived:
+    deno run --allow-read scripts/check_spec_archived.ts
+
 # Secret scan of the working tree.
 secrets:
     betterleaks dir . --no-banner --redact

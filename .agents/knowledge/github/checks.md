@@ -14,6 +14,9 @@ source of truth and this table is the map.
 | `checks / gate` | `checks` | none (aggregator) | success when every `checks /` job above succeeded; required by the ruleset |
 | `secrets / scan` | `secrets`: every push and every pull request | `just secrets-commits <range>` | betterleaks reports `no leaks found` for the commits the push or pull request added; required by the ruleset |
 | `checks / pr` | `pr`: pull request opened, edited, synchronized, reopened, ready for review | `deno run scripts/check_pr.ts` | `check_pr: ok`; required by the ruleset |
+| `checks / archive-verdict` | `pr` | `just spec-archived` | `no unarchived change` (status 0) or the change names (status 1); any other status is a failure |
+| `checks / spec-archived` or `checks / awaiting-archive` | `pr`, after `archive-verdict` | none (carrier) | the job succeeds under the first name when no change is unarchived and under the second while one is; only `checks / spec-archived` is required by the ruleset, so the merge stays blocked until the archive lands and nothing turns red |
+| `labels / sync` | `labels`: push to `main` touching `.github/labels.json`, or dispatch | `just labels --apply` | `applied N change(s)` or `nothing to do`; the only job besides `release / publish` holding a write token, never on a pull-request event |
 | `release / publish` | `release`: tag `v*` | `just check`, `just dist --tag` | a published release with `dist/<name>-<version>.zip` attached |
 
 ## Workflows
@@ -33,7 +36,13 @@ source of truth and this table is the map.
   betterleaks pre-commit hook inside `checks / lint` and by `just secrets`
   inside `just check`.
 - `pr` reruns on title and body edits without rerunning the suite, which is
-  why it is not folded into `checks`.
+  why it is not folded into `checks`. It also carries the archive gate: a
+  required check that is reported only when the tree holds no unarchived
+  OpenSpec change. Absent is not failed, so a pull request mid-implementation
+  is green yet unmergeable, and `just spec-archived` tells you why.
+- `labels` applies the label declaration on `main` only. A pull request that
+  edits `.github/labels.json` is reviewed like any other; the labels change
+  when it merges.
 
 Not in CI: `just clients-validate` needs the client CLIs (Claude Code, Codex,
 Antigravity) and runs in the dev container only.

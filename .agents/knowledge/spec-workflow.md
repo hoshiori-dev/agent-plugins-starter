@@ -51,6 +51,9 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
 5. **Freeze**: the implementer archives on the PR branch with
    `openspec-archive-change` after approval and before merge; the archive
    commit is the frozen record. A commit after it reopens the deliberation.
+   The `pr` workflow reports the required check `checks / spec-archived` only
+   when no unarchived change remains, so the merge is blocked until then
+   (`just spec-archived` shows what is still open).
 
 Agents run steps 1, 3, and 4 up to marking ready, and step 5 once the review
 approved; gate 1, the review itself, and the merge are human
