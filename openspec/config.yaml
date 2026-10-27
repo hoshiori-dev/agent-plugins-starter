@@ -11,7 +11,8 @@ context: |
   Every shipped entry has exactly one spec and every spec has
   exactly one shipped entry; `just validate` enforces the pairing.
   A change to the harness, scripts, CI, documentation, or generated client
-  files is spec-less: set skip_specs: true in its .openspec.yaml and ship
+  files is spec-less and usually needs no change directory; one opened for a
+  recorded design sets skip_specs: true in its .openspec.yaml and ships
   proposal, design, and tasks only.
   Write every artifact in English.
 

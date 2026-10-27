@@ -12,7 +12,8 @@ Code, the one client whose plugin system carries them.
   Talk to the user in the user's language.
 - A change to a shipped skill, MCP server, or agent starts as an OpenSpec
   change and waits for `spec: approved`; harness, script, CI, and doc
-  changes are spec-less (`skip_specs: true`). See
+  changes are spec-less and go straight to a pull request (a change with
+  `skip_specs: true` only for a recorded design). See
   `.agents/knowledge/spec-workflow.md`.
 - Never hand-edit generated files: `.claude-plugin/plugin.json`,
   `.claude-plugin/marketplace.json`, `com.anthropic.claude-code/mcp.json`,

@@ -26,10 +26,13 @@ base. Nothing restates a spec; `AGENTS.md` and the skills point to it.
 
 - A change to any shipped entry carries a delta spec; `just validate` enforces
   that every entry has a spec and every spec an entry.
-- A change to the harness, scripts, CI, documentation, or generated files is
-  spec-less: `.openspec.yaml` sets `skip_specs: true`, the change ships
-  proposal, design, and tasks, and the `pr-labels` workflow labels the pull
-  request `spec: skipped`.
+- A change that touches no shipped entry (harness, scripts, CI,
+  documentation, generated files) is spec-less and needs no change directory:
+  it goes straight to a pull request, which the `pr-labels` workflow labels
+  `spec: skipped`. When such a change is large enough to deserve a recorded
+  design, open an OpenSpec change whose `.openspec.yaml` sets `skip_specs:
+  true` and ships proposal, design, and tasks; it is labelled `spec: skipped`
+  too, skips gate 1, and is archived before merge like any other change.
 - Specs describe behaviour the change touches; nothing is back-filled for
   untouched code.
 

@@ -17,8 +17,8 @@ the git hooks. Without the container you need deno 2.x, uv (for `just` and
 3. For a change to a shipped skill, MCP server, or agent, add an OpenSpec
    change (`openspec/changes/<id>/`) and wait for a maintainer to add
    `spec: approved` before implementing. Harness, tooling, and documentation
-   changes are spec-less; the pull request is labelled `spec: skipped`
-   automatically.
+   changes are spec-less and need no change directory; the pull request is
+   labelled `spec: skipped` automatically.
 4. Implement; run `just gen` after touching `plugin.json`, `mcp.json`, or an
    agents directory; run `just check` before every push.
 5. Mark the PR ready when the checklist is ticked. A maintainer reviews, the
