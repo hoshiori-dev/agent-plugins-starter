@@ -1,6 +1,8 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run=git
 // Builds the release archive: the plugin payload (portable files, bundled
-// server code, client namespaces) as dist/<name>-<version>.zip from the
+// server code, client namespaces, and every registered client's generated
+// files, without which the archive loads in no client that needs a pointer
+// manifest or a converted MCP file) as dist/<name>-<version>.zip from the
 // committed tree, so untracked files never ship.
 //
 //   dist.ts [--tag vX.Y.Z]   with --tag, fail unless X.Y.Z equals plugin.json#version

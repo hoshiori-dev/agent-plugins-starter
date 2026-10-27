@@ -115,3 +115,15 @@ Deno.test("codex: non-string env values become strings", () => {
   assertEquals(r.code, 0, r.stderr);
   assertEquals(JSON.parse(r.stdout).mcpServers.s.env, { DEBUG: "true", PORT: "8080" });
 });
+
+Deno.test("codex: table and array env values are reported, not stringified", () => {
+  const r = run(
+    "codex",
+    '[mcp_servers.s]\ncommand = "deno"\nenv = { OK = "x", OPTS = { a = 1 }, LIST = ["a", "b"] }\n',
+    ".toml",
+  );
+  assertEquals(r.code, 0, r.stderr);
+  assertEquals(JSON.parse(r.stdout).mcpServers.s.env, { OK: "x" });
+  assertStringIncludes(r.stderr, "s.env.OPTS");
+  assertStringIncludes(r.stderr, "s.env.LIST");
+});

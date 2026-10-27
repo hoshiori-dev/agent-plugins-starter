@@ -17,6 +17,8 @@
 // label falls back to `spec: pending` and the record is marked withdrawn. Every
 // path the code cannot decide ends without `spec: approved`.
 
+import { parse as parseYaml } from "@std/yaml";
+
 export const SKIPPED = "spec: skipped";
 export const PENDING = "spec: pending";
 export const APPROVED = "spec: approved";
@@ -28,7 +30,6 @@ export const CHANGES_DIR = "openspec/changes/";
 export const RECORD_MARKER = "<!-- spec-approval-record -->";
 /** The only account whose comments count as approval records: the workflow token's identity. */
 export const RECORD_AUTHOR = "github-actions[bot]";
-import { parse as parseYaml } from "@std/yaml";
 
 export interface Pull {
   state: "open" | "closed";

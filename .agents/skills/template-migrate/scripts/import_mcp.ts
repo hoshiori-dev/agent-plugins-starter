@@ -107,9 +107,18 @@ function stdio(name: string, s: Server, known: string[], pathFix: (v: string) =>
   const out: Server = { type: "stdio", command: pathFix(String(s.command)) };
   if (Array.isArray(s.args)) out.args = s.args.map((a) => pathFix(String(a)));
   if (s.env && typeof s.env === "object") {
-    // TOML and JSON sources may carry numbers or booleans; MCP env values are strings.
+    // TOML and JSON sources may carry numbers or booleans, which become strings;
+    // a table or array has no string form and is reported instead.
+    const env = Object.entries(s.env as Record<string, unknown>);
+    for (const [k, v] of env) {
+      if (typeof v === "object" && v !== null) {
+        unmapped.push(`${name}.env.${k} = ${JSON.stringify(v)} (not a string)`);
+      }
+    }
     out.env = Object.fromEntries(
-      Object.entries(s.env as Record<string, unknown>).map(([k, v]) => [k, pathFix(String(v))]),
+      env.filter(([, v]) => typeof v !== "object" || v === null).map((
+        [k, v],
+      ) => [k, pathFix(String(v))]),
     );
   }
   if (typeof s.cwd === "string") out.cwd = pathFix(s.cwd);

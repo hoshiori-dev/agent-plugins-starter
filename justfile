@@ -79,10 +79,9 @@ clients-validate:
     codex plugin marketplace add . >/dev/null
     codex plugin list | grep -F "agent-plugins-starter@agent-plugins-starter"
     codex plugin marketplace remove agent-plugins-starter >/dev/null
-    just dist
-    rm -rf /tmp/aps-dist && mkdir -p /tmp/aps-dist && unzip -q dist/*.zip -d /tmp/aps-dist
-    claude plugin validate /tmp/aps-dist/agent-plugins-starter
-    ~/.gemini/bin/agy plugin validate /tmp/aps-dist/agent-plugins-starter
+    rm -rf dist /tmp/aps-dist && just dist && mkdir -p /tmp/aps-dist && unzip -q dist/*.zip -d /tmp/aps-dist
+    claude plugin validate "/tmp/aps-dist/$(deno eval 'console.log(JSON.parse(Deno.readTextFileSync("plugin.json")).name)')"
+    ~/.gemini/bin/agy plugin validate "/tmp/aps-dist/$(deno eval 'console.log(JSON.parse(Deno.readTextFileSync("plugin.json")).name)')"
 
 # Print the versions of the clients and tools the compatibility watch is verified against.
 versions:

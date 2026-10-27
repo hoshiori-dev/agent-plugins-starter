@@ -4,8 +4,17 @@ import { fixturePlugin, makeTree, runScript } from "./lib/testing.ts";
 
 function git(root: string, ...args: string[]) {
   const r = new Deno.Command("git", {
-    args: ["-c", "user.name=t", "-c", "user.email=t@example.com", ...args],
+    args: [
+      "-c",
+      "user.name=t",
+      "-c",
+      "user.email=t@example.com",
+      "-c",
+      "commit.gpgsign=false",
+      ...args,
+    ],
     cwd: root,
+    env: { GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_NOSYSTEM: "1" },
     stdout: "piped",
     stderr: "piped",
   }).outputSync();
@@ -23,7 +32,9 @@ Deno.test("dist archives the portable plugin with every client's generated files
   const list = new Deno.Command("unzip", {
     args: ["-Z1", join(root, "dist/fixture-plugin-1.2.3.zip")],
     stdout: "piped",
+    stderr: "piped",
   }).outputSync();
+  assertEquals(list.success, true, `unzip failed: ${new TextDecoder().decode(list.stderr)}`);
   const entries = new TextDecoder().decode(list.stdout).trim().split("\n");
   for (
     const expected of [
