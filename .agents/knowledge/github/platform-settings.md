@@ -3,16 +3,24 @@
 Read when configuring a repository created from this template, when a check is
 "not running" rather than failing, or before changing a remote setting. These
 are account-side settings no checkout can recreate; the template ships them as
-conventions until the owner enables them.
+conventions until the owner enables them, then records the date here.
 
 | Setting | Intended value | Tier | Readback |
 |---|---|---|---|
-| Ruleset on `main` | require a PR; required checks `checks / gate`, `secrets / scan`, and `checks / pr`; no bypass actors | convention until enabled (public repo: free) | `gh api repos/{owner}/{repo}/rulesets` |
-| Merge methods | squash only; delete head branch on merge | convention | `gh repo view --json squashMergeAllowed,deleteBranchOnMerge` |
-| Secret scanning + push protection | enabled | convention (free on public repositories) | `gh api repos/{owner}/{repo} --jq .security_and_analysis` |
-| Actions default token | read-only; workflows request `contents: write` per job | convention | Settings → Actions → General |
-| Template repository | enabled on the template itself, off on repositories created from it | convention | `gh repo view --json isTemplate` |
-| Labels | `.github/labels.json` applied | `just labels` reports drift | `gh label list` |
+| Ruleset on `main` | require a PR (0 approvals: solo maintainer; stale reviews dismissed; threads resolved; squash only); required checks `checks / gate`, `secrets / scan`, `checks / pr`; block deletion and force push; no bypass actors, so the owner also merges through PRs | enabled 2026-10-27 (ruleset id 25938075) | `gh api repos/{owner}/{repo}/rulesets` → `main`, `active` |
+| Merge methods | squash only; delete head branch on merge; squash commit = PR title + PR body | enabled 2026-10-27 | `gh repo view --json squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed,deleteBranchOnMerge` → `true,false,false,true` |
+| Secret scanning + push protection | enabled | enabled (GitHub default for this public repository, read 2026-10-27) | `gh api repos/{owner}/{repo} --jq .security_and_analysis` → both `enabled` |
+| Private vulnerability reporting | enabled (`SECURITY.md` sends reporters there) | enabled 2026-10-27 | `gh api repos/{owner}/{repo}/private-vulnerability-reporting` → `{"enabled":true}` |
+| Actions default token | read-only; workflows request `contents: write` per job | enabled (GitHub default, read 2026-10-27) | `gh api repos/{owner}/{repo}/actions/permissions/workflow` → `read`, approvals `false` |
+| Template repository | enabled on the template itself, off on repositories created from it | enabled 2026-10-27 | `gh repo view --json isTemplate` → `true` |
+| Repository metadata | description and homepage equal to `plugin.json`; topics from its `keywords` | enabled 2026-10-27 | `gh repo view --json description,homepageUrl,repositoryTopics` |
+| Labels | `.github/labels.json` applied; GitHub's default labels left in place | applied 2026-10-27 | `just labels` reports no drift |
+
+Rows marked "enabled" describe this repository. A repository created from
+the template starts at "convention" again: run the same commands there
+(`gh repo edit`, `gh api -X POST repos/{owner}/{repo}/rulesets --input`,
+`gh api -X PUT .../private-vulnerability-reporting`, `just labels --apply`)
+and record the date.
 
 Secrets and variables: none required. The release workflow uses the
 workflow's own `GITHUB_TOKEN`.
