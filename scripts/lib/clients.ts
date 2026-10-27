@@ -4,7 +4,7 @@
 // deleting that directory (and the files `footprint` lists) removes the
 // client from the template.
 import { join } from "@std/path";
-import { isDirectory } from "./findings.ts";
+import { isDirectory, listDir } from "./findings.ts";
 
 export type ClientId = "codex" | "claude-code" | "antigravity";
 
@@ -17,10 +17,10 @@ export interface ClientSpec {
   /** Hand-written wiring files outside the namespace directory. */
   wiringFiles: string[];
   /**
-   * Workspace registration link, created as `.agents/plugins/<plugin name>`
-   * pointing at the namespace directory (Antigravity discovers plugins there).
+   * Workspace agent links: the client reads agents from `dir`, so each file in
+   * `agents.dir` gets a symlink `<dir>/<file>` pointing back at it.
    */
-  workspaceLink?: { dir: string; target: string };
+  agentLinks?: { dir: string; targetPrefix: string };
   /** Files `gen.ts` writes for this client. */
   generatedFiles: string[];
   /** Symlinks inside the namespace directory, as `link -> target`. */
@@ -53,15 +53,11 @@ export const CLIENTS: readonly ClientSpec[] = [
     namespaceDir: "com.google.antigravity",
     agents: { dir: "com.google.antigravity/agents", ext: ".md" },
     wiringFiles: [],
-    workspaceLink: { dir: ".agents/plugins", target: "../../com.google.antigravity" },
-    generatedFiles: [
-      "com.google.antigravity/plugin.json",
-      "com.google.antigravity/mcp_config.json",
-    ],
-    links: [
-      { path: "com.google.antigravity/skills", target: "../skills" },
-      { path: "com.google.antigravity/mcp", target: "../mcp" },
-    ],
+    agentLinks: { dir: ".agents/agents", targetPrefix: "../../com.google.antigravity/agents" },
+    // Transitional: Antigravity reads mcp.json only behind its Agent Plugins
+    // flag; until then it reads mcp_config.json at the plugin root (watch W1).
+    generatedFiles: ["mcp_config.json"],
+    links: [],
   },
 ];
 
@@ -82,13 +78,24 @@ export function enabledClients(root: string): ClientSpec[] {
 }
 
 /** Every path that belongs to a client: what removing the client deletes. */
-export function footprint(client: ClientSpec, pluginName: string): string[] {
+export function footprint(client: ClientSpec, root: string): string[] {
   const paths = new Set<string>([
     client.namespaceDir,
     ...client.wiringFiles,
     ...client.generatedFiles,
     ...client.links.map((l) => l.path),
   ]);
-  if (client.workspaceLink) paths.add(`${client.workspaceLink.dir}/${pluginName}`);
+  if (client.agentLinks) {
+    for (const name of agentFileNames(root, client)) paths.add(`${client.agentLinks.dir}/${name}`);
+  }
   return [...paths].sort();
+}
+
+/** File names in the client's agents directory, sorted; empty when absent. */
+export function agentFileNames(root: string, client: ClientSpec): string[] {
+  const dir = join(root, client.agents.dir);
+  if (!isDirectory(dir)) return [];
+  return listDir(dir).filter((e) => e.isFile && e.name.endsWith(client.agents.ext)).map((e) =>
+    e.name
+  );
 }

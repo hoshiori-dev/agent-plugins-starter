@@ -3,7 +3,7 @@
 // plugin files (plugin.json, mcp.json, and the agents directories):
 //
 //   Claude Code   .claude-plugin/plugin.json, com.anthropic.claude-code/mcp.json
-//   Antigravity   com.google.antigravity/plugin.json, com.google.antigravity/mcp_config.json
+//   Antigravity   mcp_config.json (transitional, until its Agent Plugins flag is on)
 //   Codex         .agents/plugins/marketplace.json
 //
 // A client is generated for only while its namespace directory exists.
@@ -15,7 +15,6 @@ import { dirname, join } from "@std/path";
 import { CLIENTS, ClientSpec, enabledClients } from "./lib/clients.ts";
 import { exists, fail, Findings, listDir, readText } from "./lib/findings.ts";
 import {
-  ANTIGRAVITY_SCHEMA_URL,
   HttpServer,
   loadManifest,
   loadMcp,
@@ -174,23 +173,24 @@ function claudeServer(name: string, server: McpServer): Record<string, unknown> 
   return httpServer(server, server.type === "streamable-http" ? "http" : "sse");
 }
 
-function generateAntigravity(client: ClientSpec, manifest: PluginManifest, mcp: McpFile | null) {
+function generateAntigravity(_client: ClientSpec, _manifest: PluginManifest, mcp: McpFile | null) {
+  // Antigravity reads the root plugin.json natively, so no manifest is generated.
+  // mcp_config.json at the root is transitional (watch W1): the client reads it
+  // until its Agent Plugins flag makes it read mcp.json instead.
   const out: [string, string][] = [];
-  const native = { $schema: ANTIGRAVITY_SCHEMA_URL, ...pick(manifest, METADATA_KEYS) };
-  out.push([`${client.namespaceDir}/plugin.json`, stableJson(native)]);
   if (mcp !== null) {
     const servers: Record<string, unknown> = {};
     for (const [name, server] of Object.entries(mcp.mcpServers)) {
       servers[name] = antigravityServer(name, server);
     }
-    out.push([`${client.namespaceDir}/mcp_config.json`, stableJson({ mcpServers: servers })]);
+    out.push(["mcp_config.json", stableJson({ mcpServers: servers })]);
   }
   return out;
 }
 
 function antigravityServer(name: string, server: McpServer): Record<string, unknown> {
   // Antigravity has no plugin-root placeholder; paths become relative to the
-  // package, whose `mcp` link mirrors the root directory of the same name.
+  // plugin root, which is where it starts stdio servers.
   const map = (s: string) => {
     if (s.includes("${PLUGIN_DATA}")) {
       unsupported(

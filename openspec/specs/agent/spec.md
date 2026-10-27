@@ -7,8 +7,11 @@ enabled client under that client's namespace directory: Claude Code
 (`com.anthropic.claude-code/agents/<name>.md`, listed in the generated
 `.claude-plugin/plugin.json`), Codex (`com.openai/agents/<name>.toml`, declared
 in `.codex/config.toml`; Codex plugins do not ship agents, so this version is
-workspace-only), and Antigravity (`com.google.antigravity/agents/<name>.md`
-inside the package). Each agent has its own spec at
+workspace-only), and Antigravity (`com.google.antigravity/agents/<name>.md`,
+linked from `.agents/agents/<name>.md`; Antigravity reads plugin agents only
+from the plugin root, which this plugin keeps for portable files, so this
+version is workspace-only too). Agents exist to demonstrate client-specific
+files; the portable product is skills and MCP. Each agent has its own spec at
 `openspec/specs/agent/<name>/spec.md`.
 
 ## Requirements

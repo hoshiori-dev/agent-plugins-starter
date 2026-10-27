@@ -9,12 +9,13 @@ ships three example components, one per kind the template supports:
 |---|---|---|
 | Skill | `example-skill`, a smoke check of the plugin itself | `skills/example-skill/` (portable, every client) |
 | MCP server | `example-server`, a Deno stdio server with one `echo` tool | `mcp.json` + `mcp/example-server/` (portable; converted for Claude Code and Antigravity) |
-| Agent | `example-agent`, a read-only package reviewer | one file per client under `com.openai/`, `com.anthropic.claude-code/`, `com.google.antigravity/` |
+| Agent | `example-agent`, a read-only package reviewer | one file per client under `com.openai/`, `com.anthropic.claude-code/`, `com.google.antigravity/`; shipped only to Claude Code, whose plugin system has an agents component |
 
 Agents are not part of the specification, so each client gets its own version
-under its reverse-domain directory; everything else follows the spec and is
-either read natively (Codex) or derived by `just gen` (Claude Code's pointer
-manifest, Antigravity's native package).
+under its reverse-domain directory and the client's own mechanism points at
+it; everything else follows the spec and is either read natively (Codex,
+Antigravity) or derived by `just gen` (Claude Code's pointer manifest and MCP
+file, Antigravity's transitional `mcp_config.json`).
 
 ## Use the template
 
@@ -36,7 +37,7 @@ Everything an agent needs to work in the repository starts at `AGENTS.md`.
 |---|---|---|
 | Codex | `codex plugin marketplace add .` then `codex plugin add agent-plugins-starter@agent-plugins-starter` | the repository is a marketplace (`.agents/plugins/marketplace.json`) |
 | Claude Code | `claude --plugin-dir .` | `/plugin marketplace add hoshiori-dev/agent-plugins-starter`, then `/plugin install agent-plugins-starter@agent-plugins-starter` (the repository is a marketplace via `.claude-plugin/marketplace.json`) |
-| Antigravity | the symlink `.agents/plugins/agent-plugins-starter` registers `com.google.antigravity/` for the workspace | `agy plugin install https://github.com/hoshiori-dev/agent-plugins-starter/tree/main/com.google.antigravity` (the package directory; the bare repository URL yields skills only) |
+| Antigravity | `agy plugin install .` (then `agy plugin uninstall agent-plugins-starter`) | `agy plugin install https://github.com/hoshiori-dev/agent-plugins-starter` |
 
 The example MCP server needs [Deno](https://deno.com) on the user's machine.
 Details, verified dates, and known limitations per client are in

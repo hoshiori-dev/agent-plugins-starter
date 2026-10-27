@@ -1,9 +1,9 @@
 # agent-plugins-starter
 
 An Agent Plugins v1.0.0 plugin and the GitHub template for building one. The
-repository root is the plugin: Codex reads it natively, Claude Code through a
-generated pointer manifest, Antigravity through the native package in
-`com.google.antigravity/`.
+repository root is the plugin: Codex and Antigravity read it natively, Claude
+Code through a generated pointer manifest. Skills and MCP are the portable
+product; agents only demonstrate client-specific files.
 
 ## Always
 
@@ -14,9 +14,8 @@ generated pointer manifest, Antigravity through the native package in
   changes are spec-less (`skip_specs: true`). See
   `.agents/knowledge/spec-workflow.md`.
 - Never hand-edit generated files: `.claude-plugin/plugin.json`,
-  `com.anthropic.claude-code/mcp.json`, `com.google.antigravity/plugin.json`,
-  `com.google.antigravity/mcp_config.json`, `.agents/plugins/marketplace.json`,
-  `.claude-plugin/marketplace.json` (`just gen`), and `.agents/skills/openspec-*/`
+  `.claude-plugin/marketplace.json`, `com.anthropic.claude-code/mcp.json`,
+  `mcp_config.json`, `.agents/plugins/marketplace.json` (`just gen`), and `.agents/skills/openspec-*/`
   (`openspec init --tools agents --force`, never `openspec update`).
 - Never weaken a check, hook, workflow, or gate to make a change pass;
   propose the change on the pull request instead.
@@ -31,14 +30,14 @@ generated pointer manifest, Antigravity through the native package in
 ## Project Map
 
 ```text
-plugin.json  mcp.json          <- the portable plugin (Agent Plugins 1.0.0)
+plugin.json  mcp.json          <- the portable plugin (Agent Plugins 1.0.0); mcp_config.json is its generated Antigravity stand-in
 skills/<name>/SKILL.md         <- shipped skills (catalog: skill)
 mcp/<name>/                    <- bundled MCP server code (catalog: mcp)
 com.openai/                    <- Codex: agents/*.toml
 com.anthropic.claude-code/     <- Claude Code: agents/*.md, generated mcp.json
-com.google.antigravity/        <- Antigravity native package (generated manifest + mcp_config, agents/, links)
+com.google.antigravity/        <- Antigravity: agents/*.md (workspace-only, linked from .agents/agents/)
 .claude-plugin/                <- generated Claude Code manifest and marketplace
-.codex/config.toml  .agents/plugins/<name> -> ../../com.google.antigravity  .agents/plugins/marketplace.json  <- client wiring
+.codex/config.toml  .agents/agents/*.md -> ../../com.google.antigravity/agents/  .agents/plugins/marketplace.json  <- client wiring
 openspec/specs/<catalog>/spec.md, <catalog>/<name>/spec.md  <- catalog rules and entry specs
 scripts/                       <- management code (Deno): gen, checks, dist, labels
 .agents/knowledge/             <- agent knowledge (this file routes into it)

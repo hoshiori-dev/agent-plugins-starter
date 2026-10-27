@@ -35,16 +35,20 @@ one spec; `just validate` enforces the pairing. Work spec first.
    - *agent*: one file per enabled client, same `name` and identical
      `description`: `com.anthropic.claude-code/agents/<name>.md`,
      `com.openai/agents/<name>.toml` plus a `[agents.<name>]` table in
-     `.codex/config.toml`, `com.google.antigravity/agents/<name>.md`.
-     Read-only tools unless the spec justifies writes.
+     `.codex/config.toml`, `com.google.antigravity/agents/<name>.md` plus the
+     symlink `.agents/agents/<name>.md -> ../../com.google.antigravity/agents/<name>.md`.
+     Only the Claude Code version ships with the plugin; the others are
+     workspace demonstrations. Read-only tools unless the spec justifies
+     writes.
 3. **Generate.** `just gen` after any change to `plugin.json`, `mcp.json`, or
    an agents directory; commit the generated files with the change.
 4. **Check.** `just check`. Fix findings at their source; never edit a
    generated file or relax a check.
 5. **Verify in clients.** `just clients-validate`, then exercise the entry by
    hand in at least one client using the commands in `client-matrix.md`
-   (`claude --plugin-dir .`, the Codex marketplace, `agy plugin install
-   ./com.google.antigravity`). Record anything that contradicts the matrix.
+   (`claude --plugin-dir .`, the Codex marketplace, `agy plugin install .`
+   then `agy plugin uninstall <name>`). Record anything that contradicts the
+   matrix.
 6. **Finish.** `openspec-apply-change` tracks tasks; archive per
    `spec-workflow.md`; the PR follows `github-project-workflow`.
 
@@ -60,7 +64,7 @@ Delete the implementation and the spec in one change (a delta spec with
   `.claude-plugin/plugin.json`; that file is generated, so fix `gen.ts`, not
   the output.
 - Antigravity has no `${PLUGIN_ROOT}`; a stdio server must work with paths
-  relative to the package. `just gen` fails loudly on `cwd`, `sse`, and
+  relative to the plugin root. `just gen` fails loudly on `cwd`, `sse`, and
   `${PLUGIN_DATA}` for Antigravity rather than dropping them.
 - A skill name must not also exist under `.agents/skills/`; Codex and
   Antigravity load both directories here.

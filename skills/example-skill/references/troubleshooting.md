@@ -27,16 +27,15 @@ else.
 
 ## Antigravity
 
-- Loads the native package `com.google.antigravity/` (`plugin.json`,
-  `mcp_config.json`, `agents/`, `skills` link). Install from GitHub with the
-  package subdirectory URL:
-  `agy plugin install https://github.com/<owner>/<repo>/tree/<branch>/com.google.antigravity`,
-  or from a clone: `agy plugin install <clone>/com.google.antigravity`. Inside
-  the repository the package is registered by the symlink
-  `.agents/plugins/<plugin name>`.
-- Installing the bare repository URL yields skills only, because the
-  installer reads `mcp_config.json` and `agents/` from the plugin root.
-- Agents: shipped (`example-agent`).
+- Loads the root `plugin.json`, `skills/`, and `mcp_config.json` (the
+  generated stand-in for `mcp.json` until Antigravity's Agent Plugins flag is
+  on). Install: `agy plugin install https://github.com/<owner>/<repo>` or
+  `agy plugin install <clone>`; remove with `agy plugin uninstall <name>`.
+- Agents: not shipped. Antigravity reads plugin agents only from the plugin
+  root, which this plugin keeps for portable files. Inside the repository the
+  symlink `.agents/agents/example-agent.md` makes `example-agent` available;
+  elsewhere copy `com.google.antigravity/agents/example-agent.md` into your
+  project's `.agents/agents/`.
 
 ## Other Agent Plugins clients
 

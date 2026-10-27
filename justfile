@@ -57,8 +57,10 @@ check: (gen "--check") lint validate harness-check spec-check test secrets
 # Validate the package with the installed client CLIs (local only; CI has no clients). Claude runs non-strict: this repository's root CLAUDE.md draws a warning.
 clients-validate:
     claude plugin validate .
-    ~/.gemini/bin/agy plugin validate com.google.antigravity --strict
     ~/.gemini/bin/agy plugin validate .
+    ~/.gemini/bin/agy plugin install . >/dev/null
+    ~/.gemini/bin/agy plugin list --json | grep -F '"example-server"'
+    ~/.gemini/bin/agy plugin uninstall agent-plugins-starter >/dev/null
     codex plugin marketplace add . >/dev/null
     codex plugin list | grep -F "agent-plugins-starter@agent-plugins-starter"
     codex plugin marketplace remove agent-plugins-starter >/dev/null

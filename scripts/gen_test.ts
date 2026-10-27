@@ -10,8 +10,7 @@ Deno.test("gen writes every client file, is deterministic, and --check passes af
   const snapshot = [
     ".claude-plugin/plugin.json",
     "com.anthropic.claude-code/mcp.json",
-    "com.google.antigravity/plugin.json",
-    "com.google.antigravity/mcp_config.json",
+    "mcp_config.json",
     ".agents/plugins/marketplace.json",
   ].map(read);
   const second = runScript("gen.ts", [], root);
@@ -28,16 +27,13 @@ Deno.test("gen writes every client file, is deterministic, and --check passes af
   assertEquals(claudeMcp.local.args[1], "${CLAUDE_PLUGIN_ROOT}/mcp/local/server.ts");
   assertEquals(claudeMcp.local.env.CONFIG, "${CLAUDE_PLUGIN_ROOT}/config.json");
   assertEquals(claudeMcp.remote.type, "http");
-  const agy = JSON.parse(snapshot[2]);
-  assertEquals(agy.$schema, "https://antigravity.google/schemas/v1/plugin.json");
-  assertEquals(agy.name, "fixture-plugin");
-  const agyMcp = JSON.parse(snapshot[3]).mcpServers;
+  const agyMcp = JSON.parse(snapshot[2]).mcpServers;
   assertEquals(agyMcp.local.args, ["run", "mcp/local/server.ts"]);
   assertEquals(agyMcp.remote, { url: "https://example.com/mcp", headers: { "X-Tenant": "t" } });
   const claudeMarket = JSON.parse(read(".claude-plugin/marketplace.json"));
   assertEquals(claudeMarket.plugins[0].source, "./");
   assertEquals(claudeMarket.owner, { name: "Fixture Team" });
-  const market = JSON.parse(snapshot[4]);
+  const market = JSON.parse(snapshot[3]);
   assertEquals(market.plugins[0].source, { source: "local", path: "./" });
   assertEquals(market.plugins[0].category, "Productivity");
 });
@@ -63,8 +59,7 @@ Deno.test("gen --check reports stale, missing, and orphan files", () => {
 Deno.test("gen only generates for enabled clients", () => {
   const files = fixturePlugin();
   delete files["com.google.antigravity/agents/reviewer.md"];
-  delete files["com.google.antigravity/skills"];
-  delete files["com.google.antigravity/mcp"];
+  delete files[".agents/agents/reviewer.md"];
   const root = makeTree(files);
   const list = runScript("gen.ts", ["--list"], root);
   assertEquals(list.code, 0, list.output);

@@ -4,8 +4,8 @@
 Rules shared by every MCP server declared in `mcp.json`, the portable MCP
 component of Agent Plugins v1.0.0. Codex reads `mcp.json` directly; Claude
 Code reads the generated `com.anthropic.claude-code/mcp.json`; Antigravity
-reads the generated `com.google.antigravity/mcp_config.json` inside its
-package. Each server has its own spec at `openspec/specs/mcp/<name>/spec.md`.
+reads the generated root `mcp_config.json` until its Agent Plugins flag makes
+it read `mcp.json`. Each server has its own spec at `openspec/specs/mcp/<name>/spec.md`.
 
 ## Requirements
 

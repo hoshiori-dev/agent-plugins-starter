@@ -9,6 +9,7 @@
 import { dirname, join, normalize, relative } from "@std/path";
 import { parse as parseToml } from "@std/toml";
 import {
+  agentFileNames,
   clientById,
   CLIENTS,
   ClientSpec,
@@ -42,7 +43,7 @@ if (Deno.args[0] === "--footprint") {
   const id = Deno.args[1];
   if (!id) fail("--footprint needs a client id: " + CLIENTS.map((c) => c.id).join(", "));
   try {
-    for (const path of footprint(clientById(id), loadManifest(root).manifest.name)) {
+    for (const path of footprint(clientById(id), root)) {
       console.log(path);
     }
   } catch (error) {
@@ -79,7 +80,7 @@ checkMcp(mcp);
 const skills = checkSkills();
 const agents = checkAgents();
 checkCodex(manifest, agents);
-checkAntigravity(manifest);
+checkAntigravity();
 checkCatalogs(skills, mcp, agents);
 Deno.exit(findings.report("check_plugin"));
 
@@ -392,34 +393,24 @@ function checkCodex(manifest: PluginManifest, agents: Map<string, AgentFile[]>) 
   }
 }
 
-function checkAntigravity(manifest: PluginManifest) {
+function checkAntigravity() {
   const client = clientById("antigravity");
   if (!isEnabled(root, client)) return;
-  for (const link of client.links) {
-    const target = readLinkOrNull(join(root, link.path));
-    if (target !== link.target) {
+  const agentLinks = client.agentLinks!;
+  for (const name of agentFileNames(root, client)) {
+    const linkPath = `${agentLinks.dir}/${name}`;
+    const expected = `${agentLinks.targetPrefix}/${name}`;
+    const actual = readLinkOrNull(join(root, linkPath));
+    if (actual !== expected) {
       findings.add({
-        file: link.path,
-        rule: "antigravity-link",
-        problem: target === null
-          ? "symlink is missing or is a real file."
-          : `symlink points to ${target}.`,
-        fix: `ln -sfn ${link.target} ${link.path}`,
+        file: linkPath,
+        rule: "antigravity-agent-wiring",
+        problem: actual === null
+          ? "missing; Antigravity reads workspace agents from .agents/agents/ and plugins carry no agents."
+          : `points to ${actual}.`,
+        fix: `ln -sfn ${expected} ${linkPath}`,
       });
     }
-  }
-  const link = client.workspaceLink!;
-  const path = `${link.dir}/${manifest.name}`;
-  const target = readLinkOrNull(join(root, path));
-  if (target !== link.target) {
-    findings.add({
-      file: path,
-      rule: "antigravity-wiring",
-      problem: target === null
-        ? "workspace registration link is missing; Antigravity discovers plugins in .agents/plugins/."
-        : `link points to ${target}.`,
-      fix: `ln -sfn ${link.target} ${path}`,
-    });
   }
 }
 

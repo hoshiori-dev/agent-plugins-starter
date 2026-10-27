@@ -105,9 +105,7 @@ export function fixturePlugin(): Record<string, FileSpec> {
     "com.openai/agents/reviewer.toml": tomlAgent("reviewer"),
     "com.anthropic.claude-code/agents/reviewer.md": mdAgent("reviewer"),
     "com.google.antigravity/agents/reviewer.md": mdAgent("reviewer"),
-    "com.google.antigravity/skills": { symlink: "../skills" },
-    "com.google.antigravity/mcp": { symlink: "../mcp" },
-    ".agents/plugins/fixture-plugin": { symlink: "../../com.google.antigravity" },
+    ".agents/agents/reviewer.md": { symlink: "../../com.google.antigravity/agents/reviewer.md" },
     ".codex/config.toml":
       '[plugins."fixture-plugin@fixture-plugin"]\nenabled = true\n\n[agents.reviewer]\ndescription = "Fixture agent."\nconfig_file = "../com.openai/agents/reviewer.toml"\n',
     "openspec/specs/skill/spec.md": "# Skill Catalog\n",

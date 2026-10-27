@@ -23,7 +23,7 @@ workaround, and that row's disposition is often the real change to make.
 Facts live in one place: `scripts/lib/clients.ts`.
 
 1. Add (or delete) the client's entry: namespace directory, agents
-   directory and extension, wiring files, generated files, links.
+   directory and extension, wiring files, generated files, agent links.
 2. Teach `scripts/gen.ts` how to produce the client's files from
    `plugin.json` and `mcp.json`, failing loudly on anything the client
    cannot express; add cases to `scripts/gen_test.ts`.

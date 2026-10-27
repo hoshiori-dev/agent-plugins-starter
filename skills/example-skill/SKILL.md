@@ -21,7 +21,8 @@ what is missing and how to fix it.
    absent, read [references/troubleshooting.md](references/troubleshooting.md)
    and follow the section for your client.
 3. **Agents.** Check whether a subagent named `example-agent` is available
-   (Claude Code and Antigravity list subagents; Codex lists agent roles).
+   (Claude Code lists plugin subagents; Codex and Antigravity see it only
+   inside this repository's workspace).
    Report "not shipped" rather than "broken" when the client does not ship
    agents through plugins; the troubleshooting reference says which.
 4. **Report** one line per component: `skills: ok`, `mcp: ok | missing (<fix>)`,
@@ -33,6 +34,6 @@ what is missing and how to fix it.
 
 - The MCP server runs with `deno`; a missing `deno` binary on the user's
   machine shows up as a server start failure, not as a missing tool.
-- Antigravity loads MCP and agents from the `com.google.antigravity/`
-  package, not from the repository root (its Agent Plugins support is behind
-  a feature flag that is off by default in current builds).
+- Antigravity reads `mcp_config.json`, not `mcp.json`, until its Agent
+  Plugins flag is on; the file is generated from `mcp.json`. It does not load
+  this plugin's agents at all; only Claude Code does.

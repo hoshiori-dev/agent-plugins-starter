@@ -32,13 +32,15 @@ procedure removes what the project will not use and leaves `just check` green.
 3. **Remove the examples.** Delete `skills/example-skill/`,
    `mcp/example-server/`, the `example-server` entry in `mcp.json` (delete
    `mcp.json` if empty), every `com.*/agents/example-agent.*`, the
-   `[agents.example-agent]` table in `.codex/config.toml`, and
+   `.agents/agents/example-agent.md` link, the `[agents.example-agent]` table
+   in `.codex/config.toml`, and
    `openspec/specs/{skill/example-skill,mcp/example-server,agent/example-agent}/`.
 4. **Remove unused clients.** For each dropped client, `just client-footprint
    <id>` lists its files; delete them all. Dropping Codex also deletes
    `extensions.com.openai` from `plugin.json` and `.codex/`; dropping Claude
    Code deletes `.claude-plugin/`; dropping Antigravity deletes
-   the `.agents/plugins/<name>` link. Update `.agents/knowledge/client-matrix.md`,
+   the root `mcp_config.json` and the `.agents/agents/*.md` links. Update
+   `.agents/knowledge/client-matrix.md`,
    `openspec/specs/agent/spec.md`, `README.md`, and the
    `.devcontainer/devcontainer.json` features for the dropped clients.
 5. **Remove unused catalogs.** Delete `openspec/specs/<catalog>/`, the catalog
@@ -52,9 +54,7 @@ procedure removes what the project will not use and leaves `just check` green.
    `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md`, and the knowledge base
    (`grep -rn "agent-plugins-starter\|hoshiori-dev" --exclude-dir=.git .`),
    except the upstream template URL in the `template-adjust` skill, which
-   must keep pointing at the template. Rename the
-   `.agents/plugins/agent-plugins-starter` link to the new name. Set
-   `version` to `0.1.0`.
+   must keep pointing at the template. Set `version` to `0.1.0`.
 7. **Regenerate and check.** `just gen` (it never deletes: remove orphans it
    reports), then `just check`, then `just clients-validate` for the kept
    clients.
@@ -77,5 +77,5 @@ procedure removes what the project will not use and leaves `just check` green.
 - Removing a client while keeping agents must remove that client's agent
   files too, or `agent-parity` fails for the remaining clients.
 - `.agents/` is shared ground: Codex (`.agents/plugins/marketplace.json`,
-  skills), Antigravity (`.agents/plugins/<name>` link, skills), and OpenSpec
+  skills), Antigravity (`.agents/agents/*.md` links, skills), and OpenSpec
   (`.agents/skills/openspec-*`). Delete only the dropped client's files.

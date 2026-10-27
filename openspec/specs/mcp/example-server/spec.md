@@ -3,7 +3,7 @@
 ## Purpose
 A minimal stdio MCP server bundled with the plugin to prove MCP wiring in each
 client. It ships to Codex (via `mcp.json`), Claude Code (via the generated
-Claude MCP file), and Antigravity (via the generated package MCP file). It
+Claude MCP file), and Antigravity (via the generated root `mcp_config.json`). It
 runs on Deno, which users must have installed. It exists to demonstrate the
 MCP layout and is removed by the template tailoring procedure.
 

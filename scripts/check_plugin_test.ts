@@ -59,11 +59,8 @@ Deno.test("check_plugin --footprint lists a client's files", () => {
   const result = runScript("check_plugin.ts", ["--footprint", "antigravity"], root);
   assertEquals(result.code, 0);
   assertEquals(result.output.trim().split("\n"), [
-    ".agents/plugins/fixture-plugin",
+    ".agents/agents/reviewer.md",
     "com.google.antigravity",
-    "com.google.antigravity/mcp",
-    "com.google.antigravity/mcp_config.json",
-    "com.google.antigravity/plugin.json",
-    "com.google.antigravity/skills",
+    "mcp_config.json",
   ]);
 });
