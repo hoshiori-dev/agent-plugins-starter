@@ -32,7 +32,8 @@ import { fail } from "./lib/findings.ts";
 const apply = Deno.args.includes("--apply");
 const positional = Deno.args.filter((a) => a !== "--apply");
 if (positional.length > 1) fail("usage: sync_pr_labels.ts [<number>] [--apply]");
-const numberArg = positional[0] ?? Deno.env.get("PR_NUMBER") ?? Deno.env.get("DISPATCH_NUMBER") ??
+// `||`, not `??`: the workflow sets PR_NUMBER to the empty string on a dispatch.
+const numberArg = positional[0] || Deno.env.get("PR_NUMBER") || Deno.env.get("DISPATCH_NUMBER") ||
   "";
 if (!/^[0-9]+$/.test(numberArg)) {
   fail("no pull request number: pass it or set PR_NUMBER / DISPATCH_NUMBER");
@@ -103,8 +104,11 @@ const github: Api = {
     ),
   comments: () =>
     Promise.resolve(
-      paged<{ id: number; body: string }>(`${issue}/comments?per_page=100`).map((c): Comment => ({
+      paged<{ id: number; body: string; user?: { login: string } }>(
+        `${issue}/comments?per_page=100`,
+      ).map((c): Comment => ({
         id: c.id,
+        author: c.user?.login ?? "",
         body: c.body ?? "",
       })),
     ),
@@ -120,8 +124,9 @@ try {
   const pull = await github.pull();
   currentLabels = pull.labels;
   const decision = await decide(github, event);
-  const plan = labelPlan(pull.labels, decision.state);
-  console.log(`#${number}: ${decision.state ?? "no state label"} (${decision.reason})`);
+  const plan = labelPlan(pull.labels, decision);
+  const shown = decision.leave ? "untouched" : decision.state ?? "no state label";
+  console.log(`#${number}: ${shown} (${decision.reason})`);
   for (const l of plan.add) console.log(`  add    ${l}`);
   for (const l of plan.remove) console.log(`  remove ${l}`);
   if (decision.record) {

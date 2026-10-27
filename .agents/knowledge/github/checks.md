@@ -17,7 +17,7 @@ source of truth and this table is the map.
 | `checks / archive-verdict` | `pr` | `just spec-archived` | `no unarchived change` (status 0) or the change names (status 1); any other status is a failure |
 | `checks / spec-archived` or `checks / awaiting-archive` | `pr`, after `archive-verdict` | none (carrier) | the job succeeds under the first name when no change is unarchived and under the second while one is; only `checks / spec-archived` is required by the ruleset, so the merge stays blocked until the archive lands and nothing turns red |
 | `labels / pr` | `pr-labels`: pull request opened, reopened, synchronized, labeled, unlabeled (`pull_request_target`), or dispatch | `just pr-labels <n>` prints the same decision without writing | the decided state label and the label writes; never a required check |
-| `labels / sync` | `labels`: push to `main` touching `.github/labels.json`, or dispatch | `just labels --apply` | `applied N change(s)` or `nothing to do`; the only job besides `release / publish` holding a write token, never on a pull-request event |
+| `labels / sync` | `labels`: push to `main` touching `.github/labels.json`, or dispatch | `just labels --apply` | `applied N change(s)` or `labels: in sync`; holds `issues: write` and never runs on a pull-request event (the other write-token jobs are `labels / pr` and `release / publish`) |
 | `release / publish` | `release`: tag `v*` | `just check`, `just dist --tag` | a published release with `dist/<name>-<version>.zip` attached |
 
 ## Workflows

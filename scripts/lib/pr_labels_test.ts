@@ -13,6 +13,7 @@ import {
   parseRecord,
   PENDING,
   Pull,
+  RECORD_AUTHOR,
   recordBody,
   SKIPPED,
   TreeEntry,
@@ -95,7 +96,7 @@ Deno.test("a write-permission account adding spec: approved is recorded", async 
   const d = await decide(api, approveEvent);
   assertEquals(d.state, APPROVED);
   assertEquals(d.record?.id, undefined);
-  const record = parseRecord({ id: 1, body: d.record!.body })!;
+  const record = parseRecord({ id: 1, body: d.record!.body, author: RECORD_AUTHOR })!;
   assertEquals(record.status, "approved");
   assertEquals(record.commit, HEAD);
   assertEquals(record.by, "maintainer");
@@ -124,7 +125,11 @@ Deno.test("the approval is refused below write permission, on a moved head, or f
 
 Deno.test("a standing approval survives unrelated pushes and dies when the package changes", async () => {
   const hash = await packageHash([...ARCHIVE, ...CHANGE], ["add-thing"]);
-  const record: Comment = { id: 7, body: recordBody("approved", HEAD, "maintainer", hash) };
+  const record: Comment = {
+    id: 7,
+    body: recordBody("approved", HEAD, "maintainer", hash),
+    author: RECORD_AUTHOR,
+  };
   const same = await decide(
     fake({
       events: [approvedBy("maintainer")],
@@ -149,12 +154,19 @@ Deno.test("a standing approval survives unrelated pushes and dies when the packa
   assertEquals(d.state, PENDING);
   assertStringIncludes(d.reason, "package changed");
   assertEquals(d.record?.id, 7);
-  assertEquals(parseRecord({ id: 7, body: d.record!.body })?.status, "withdrawn");
+  assertEquals(
+    parseRecord({ id: 7, body: d.record!.body, author: RECORD_AUTHOR })?.status,
+    "withdrawn",
+  );
 });
 
 Deno.test("a person removing spec: approved, or a label without a record, means pending", async () => {
   const hash = await packageHash([...ARCHIVE, ...CHANGE], ["add-thing"]);
-  const record: Comment = { id: 7, body: recordBody("approved", HEAD, "maintainer", hash) };
+  const record: Comment = {
+    id: 7,
+    body: recordBody("approved", HEAD, "maintainer", hash),
+    author: RECORD_AUTHOR,
+  };
   const removed = await decide(
     fake({
       events: [approvedBy("maintainer"), {
@@ -173,13 +185,44 @@ Deno.test("a person removing spec: approved, or a label without a record, means 
     null,
   );
   assertEquals(noRecord.state, PENDING);
-  assertEquals(labelPlan([APPROVED, "type: task"], PENDING), {
+  assertEquals(labelPlan([APPROVED, "type: task"], noRecord), {
     add: [PENDING],
     remove: [APPROVED],
   });
 });
 
-Deno.test("closed pull requests and truncated trees are not decided", async () => {
-  assertEquals((await decide(fake({ pull: { state: "closed" } }), null)).state, null);
+Deno.test("a record comment from anyone but the workflow identity is ignored", async () => {
+  const hash = await packageHash([...ARCHIVE, ...CHANGE], ["add-thing"]);
+  const body = recordBody("approved", HEAD, "maintainer", hash);
+  const forged: Comment = { id: 9, body, author: "contributor" };
+  const otherBot: Comment = { id: 10, body, author: "dependabot[bot]" };
+  for (const comments of [[forged], [otherBot], [forged, otherBot]]) {
+    const api = fake({
+      events: [approvedBy("maintainer")],
+      comments,
+      pull: { labels: [APPROVED] },
+    });
+    const d = await decide(api, null);
+    assertEquals(d.state, PENDING);
+    assertStringIncludes(d.reason, "no approval record");
+    assertEquals(d.record, undefined, "a forged record is never edited");
+  }
+});
+
+Deno.test("archiving is recognised whatever status the archive files carry", async () => {
+  for (const status of ["added", "renamed", "modified"]) {
+    const files = [{ filename: "openspec/changes/archive/2026-10-01-old/proposal.md", status }];
+    assertEquals((await decide(fake({ entries: ARCHIVE, files }), null)).state, ARCHIVED, status);
+  }
+});
+
+Deno.test("closed pull requests keep their labels; truncated trees are not decided", async () => {
+  const closed = await decide(
+    fake({ pull: { state: "closed", labels: [ARCHIVED, "type: task"] } }),
+    null,
+  );
+  assertEquals(closed.state, null);
+  assertEquals(closed.leave, true);
+  assertEquals(labelPlan([ARCHIVED, "type: task"], closed), { add: [], remove: [] });
   await assertRejects(() => decide(fake({ truncated: true }), null), Error, "truncated");
 });

@@ -2,8 +2,8 @@
 # (scripts/sync_labels.ts --apply, which creates and updates labels and never
 # deletes one), or on dispatch. The job holds `issues: write`, so this workflow
 # never runs on a pull-request event: that token stays out of reach of code
-# nobody reviewed yet. The checkout names main, so a rerun applies what main
-# holds now, never an older declaration.
+# nobody reviewed yet. The checkout names main, so a rerun or a dispatch from
+# any branch applies what main holds now, never an older declaration.
 name: labels
 
 on:
@@ -21,7 +21,6 @@ concurrency:
 jobs:
   sync:
     name: labels / sync
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read

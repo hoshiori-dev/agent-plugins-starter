@@ -26,6 +26,8 @@ export type StateLabel = typeof STATE_LABELS[number];
 
 export const CHANGES_DIR = "openspec/changes/";
 export const RECORD_MARKER = "<!-- spec-approval-record -->";
+/** The only account whose comments count as approval records: the workflow token's identity. */
+export const RECORD_AUTHOR = "github-actions[bot]";
 
 export interface Pull {
   state: "open" | "closed";
@@ -50,6 +52,7 @@ export interface LabelEvent {
 export interface Comment {
   id: number;
   body: string;
+  author: string;
 }
 
 export interface Api {
@@ -80,6 +83,8 @@ export interface Record {
 export interface Decision {
   state: StateLabel | null;
   reason: string;
+  /** True when the labels must not be touched at all (closed pull request). */
+  leave?: boolean;
   /** Comment to create (no id) or update (with id); absent when nothing changes. */
   record?: { id?: number; body: string };
 }
@@ -140,7 +145,7 @@ export function recordBody(
 }
 
 export function parseRecord(comment: Comment): Record | null {
-  if (!comment.body.startsWith(RECORD_MARKER)) return null;
+  if (comment.author !== RECORD_AUTHOR || !comment.body.startsWith(RECORD_MARKER)) return null;
   const get = (key: string) => comment.body.match(new RegExp(`^${key}: (\\S+)$`, "m"))?.[1];
   const status = get("Status"),
     commit = get("Approved commit"),
@@ -163,7 +168,11 @@ export function standingApproval(events: LabelEvent[]): LabelEvent | undefined {
 export async function decide(api: Api, event: Event | null): Promise<Decision> {
   const pull = await api.pull();
   if (pull.state !== "open") {
-    return { state: null, reason: "the pull request is closed; labels are left alone" };
+    return {
+      state: null,
+      leave: true,
+      reason: "the pull request is closed; labels are left alone",
+    };
   }
 
   const files = await api.files();
@@ -176,12 +185,12 @@ export async function decide(api: Api, event: Event | null): Promise<Decision> {
   }
   const changes = unarchivedChanges(tree.entries);
   if (changes.length === 0) {
-    const archived = files.some((f) =>
-      f.filename.startsWith(`${CHANGES_DIR}archive/`) && f.status === "added"
-    );
+    // Any status: the archive files are `added` against a base without the
+    // change and `renamed` against a base that already holds it (a stack).
+    const archived = files.some((f) => f.filename.startsWith(`${CHANGES_DIR}archive/`));
     return archived
-      ? { state: ARCHIVED, reason: "no unarchived change; this pull request adds an archived one" }
-      : { state: null, reason: "no unarchived change and no archived one added" };
+      ? { state: ARCHIVED, reason: "no unarchived change; this pull request archives one" }
+      : { state: null, reason: "no unarchived change and no archived one touched" };
   }
 
   const hash = await packageHash(tree.entries, changes);
@@ -256,11 +265,13 @@ async function refuse(
   return null;
 }
 
-/** The label writes that turn `current` into exactly `state`. */
+/** The label writes that turn `current` into the decided state; none when the decision is to leave the labels. */
 export function labelPlan(
   current: string[],
-  state: StateLabel | null,
+  decision: Decision,
 ): { add: string[]; remove: string[] } {
+  if (decision.leave) return { add: [], remove: [] };
+  const { state } = decision;
   const remove = STATE_LABELS.filter((l) => l !== state && current.includes(l));
   const add = state !== null && !current.includes(state) ? [state] : [];
   return { add, remove };

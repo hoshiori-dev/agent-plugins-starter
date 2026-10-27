@@ -27,7 +27,12 @@ on:
 permissions: {}
 
 # One group per pull request. A running run finishes; only a pending run is
-# replaced by a newer one, so no approval record is half written.
+# replaced by a newer one, so no approval record is half written. Known
+# boundary: while a run is active, a queued `labeled spec: approved` run can
+# be replaced by a later label event's run, which then finds the label without
+# a record and removes it. The maintainer sees the removal and adds the label
+# again; a record is never written for an event the run did not see, so an
+# approval is never bound to the wrong commit.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || inputs.number }}
   cancel-in-progress: false
