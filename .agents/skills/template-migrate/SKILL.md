@@ -38,7 +38,7 @@ silently: every field that has no home here is listed for the user to decide.
    confirm `name` equals the directory and the description is 1-1024
    characters. Claude `commands/*.md` become skills with the same body and a
    description derived from the command's; Antigravity workflows likewise.
-5. **Agents.** For each source agent, write one version per enabled client
+5. **Agents.** For each source agent, write one version per supported client
    whose plugin system carries agents (`.agents/skills/plugin-development/SKILL.md`
    step 2; Claude Code today); keep the instructions body and translate tool
    names. An agent from a client that cannot carry agents in a plugin (Codex

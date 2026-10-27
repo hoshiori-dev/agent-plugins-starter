@@ -7,13 +7,13 @@
 //   Antigravity   mcp_config.json (transitional, until its Agent Plugins flag is on)
 //   Codex         .agents/plugins/marketplace.json
 //
-// A client is generated for only while its namespace directory exists.
+// The clients are those registered in lib/clients.ts.
 //
 //   gen.ts            write files that differ from the expected content
 //   gen.ts --check    write nothing; report STALE, MISSING, and ORPHAN files
 //   gen.ts --list     print the paths this run would generate
 import { dirname, join } from "@std/path";
-import { CLIENTS, ClientSpec, enabledClients } from "./lib/clients.ts";
+import { CLIENTS, ClientSpec } from "./lib/clients.ts";
 import { exists, fail, Findings, listDir, readText } from "./lib/findings.ts";
 import {
   HttpServer,
@@ -53,9 +53,8 @@ if (mcpErrors.length > 0) {
   fail(`mcp.json violates the Agent Plugins schema:\n  ${mcpErrors.join("\n  ")}`);
 }
 
-const enabled = enabledClients(root);
 const expected = new Map<string, string>();
-for (const client of enabled) {
+for (const client of CLIENTS) {
   for (const [path, content] of generate(client, manifest, mcp)) expected.set(path, content);
 }
 
@@ -85,18 +84,16 @@ for (const [path, content] of [...expected].sort()) {
   console.log(`wrote ${path}`);
 }
 
-// Generated files whose client is disabled, or whose source (mcp.json) is gone.
+// Generated files whose source (mcp.json) is gone. A dropped client's files
+// are not known here any more: `just client-footprint <id>` lists them first.
 for (const client of CLIENTS) {
   for (const path of client.generatedFiles) {
     if (expected.has(path) || !exists(join(root, path))) continue;
-    const reason = enabled.includes(client)
-      ? "its source mcp.json no longer exists"
-      : `client ${client.id} is disabled (${client.namespaceDir}/ is absent)`;
     findings.add({
       file: path,
       rule: "gen-orphan",
-      problem: `generated file exists but ${reason}.`,
-      fix: `delete ${path}, or restore its source.`,
+      problem: "generated file exists but its source mcp.json no longer exists.",
+      fix: `delete ${path}, or restore mcp.json.`,
     });
   }
 }

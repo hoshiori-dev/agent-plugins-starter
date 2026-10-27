@@ -32,7 +32,7 @@ one spec; `just validate` enforces the pairing. Work spec first.
      placeholders only in `args`/`env`/`cwd`); bundled code goes in
      `mcp/<name>/` with a `*_test.ts` that starts the server from the
      `mcp.json` declaration.
-   - *agent*: one file per enabled client whose plugin system carries
+   - *agent*: one file per supported client whose plugin system carries
      agents, same `name` and identical `description`; today that is
      `com.anthropic.claude-code/agents/<name>.md` only. Codex and Antigravity
      get no agent files: their plugins cannot carry them

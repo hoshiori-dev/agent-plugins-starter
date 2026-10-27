@@ -33,14 +33,17 @@ procedure removes what the project will not use and leaves `just check` green.
    `mcp/example-server/`, the `example-server` entry in `mcp.json` (delete
    `mcp.json` if empty), every `com.*/agents/example-agent.*`, and
    `openspec/specs/{skill/example-skill,mcp/example-server,agent/example-agent}/`.
-4. **Remove unused clients.** For each dropped client, `just client-footprint
-   <id>` lists its files; delete them all. Dropping Codex also deletes
-   `extensions.com.openai` from `plugin.json` and `.codex/`; dropping Claude
-   Code deletes `.claude-plugin/`; dropping Antigravity deletes
-   the root `mcp_config.json`. Update
-   `.agents/knowledge/client-matrix.md`,
-   `openspec/specs/agent/spec.md`, `README.md`, and the
-   `.devcontainer/devcontainer.json` features for the dropped clients.
+4. **Remove unused clients.** Supported clients are declared in
+   `scripts/lib/clients.ts`; dropping one is a project decision made there.
+   For each dropped client, first run `just client-footprint <id>` and delete
+   the listed files, then remove the client's entry from `CLIENTS` and its id
+   from `ClientId`; `deno check` then names the `gen.ts` branch and
+   `check_plugin.ts` rules that go with it. Remove its lines from the
+   `clients-validate` recipe and the `.devcontainer/devcontainer.json`
+   features. Dropping Codex also deletes `extensions.com.openai` from
+   `plugin.json` (the `extension-namespace` rule insists). Update
+   `.agents/knowledge/client-matrix.md`, `openspec/specs/agent/spec.md`, and
+   `README.md`.
 5. **Remove unused catalogs.** Delete `openspec/specs/<catalog>/`, the catalog
    entry in `scripts/check_plugin.ts`, and its row in `openspec/config.yaml`
    context; without `mcp` also delete `mcp.json` and `mcp/`; without `agent`
@@ -70,8 +73,9 @@ procedure removes what the project will not use and leaves `just check` green.
 
 ## Gotchas
 
-- `just gen --check` reports `gen-orphan` for generated files of a removed
-  client; delete them by hand, the generator never deletes.
+- Run `just client-footprint <id>` before removing a client from the
+  registry: afterwards nothing knows its generated files, and `gen --check`
+  cannot report them as orphans.
 - Removing a client while keeping agents must remove that client's agent
   files too, or `agent-parity` fails for the remaining clients.
 - `.agents/` is shared ground: Codex (`.agents/plugins/marketplace.json`,

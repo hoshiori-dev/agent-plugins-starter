@@ -34,13 +34,11 @@ Code, the one client whose plugin system carries them.
 plugin.json  mcp.json          <- the portable plugin (Agent Plugins 1.0.0); mcp_config.json is its generated Antigravity stand-in
 skills/<name>/SKILL.md         <- shipped skills (catalog: skill)
 mcp/<name>/                    <- bundled MCP server code (catalog: mcp)
-com.openai/                    <- Codex: README only (Codex plugins carry no agents, watch W9)
-com.anthropic.claude-code/     <- Claude Code: agents/*.md, generated mcp.json
-com.google.antigravity/        <- Antigravity: README only (plugin agents live at the root only, watch W2)
+com.anthropic.claude-code/     <- Claude Code's client-specific files: agents/*.md, generated mcp.json (the only client with any; spec §8 directories exist only then)
 .claude-plugin/                <- generated Claude Code manifest and marketplace
 .codex/config.toml  .agents/plugins/marketplace.json  <- Codex workspace wiring (plugin enable, generated marketplace)
 openspec/specs/<catalog>/spec.md, <catalog>/<name>/spec.md  <- catalog rules and entry specs
-scripts/                       <- management code (Deno): gen, checks, dist, labels
+scripts/                       <- management code (Deno): gen, checks, dist, labels; lib/clients.ts declares the supported clients
 .agents/knowledge/             <- agent knowledge (this file routes into it)
 .agents/skills/                <- project skills; Claude Code sees them via .claude/skills symlinks
 .github/                       <- workflows, issue forms, PR template, labels

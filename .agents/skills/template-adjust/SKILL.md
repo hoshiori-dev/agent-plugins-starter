@@ -20,20 +20,24 @@ workaround, and that row's disposition is often the real change to make.
 
 ## Add or remove a client
 
-Facts live in one place: `scripts/lib/clients.ts`.
+Facts live in one place: `scripts/lib/clients.ts`, and the entry there is
+the decision: a client is supported because it is registered, never because
+some file or directory exists.
 
-1. Add (or delete) the client's entry: namespace directory, wiring files,
-   generated files, and `agents` (directory and extension) only when the
-   client's plugin system carries agents; otherwise leave `agents` out and
-   add a watch-list row for the limitation.
+1. Add (or delete) the client's entry and its `ClientId`: namespace
+   directory, wiring files, generated files, and `agents` (directory and
+   extension) only when the client's plugin system carries agents;
+   otherwise leave `agents` out and add a watch-list row for the limitation.
+   When deleting, run `just client-footprint <id>` first and remove those
+   files.
 2. Teach `scripts/gen.ts` how to produce the client's files from
    `plugin.json` and `mcp.json`, failing loudly on anything the client
    cannot express; add cases to `scripts/gen_test.ts`.
 3. Add the client's wiring checks to `scripts/check_plugin.ts` if it has
    wiring files.
-4. Create the namespace directory with a `README.md` and, when the client
-   carries agents, one agent file per existing agent (or delete the client's
-   footprint: `just client-footprint <id>`).
+4. Create the namespace directory only if the client has hand-written files
+   (one agent file per existing agent when it carries agents); a client
+   without such files gets no directory.
 5. Update `.agents/knowledge/client-matrix.md` (table, limitations,
    verification log with today's date), `openspec/specs/agent/spec.md`,
    `README.md`, the `justfile` `clients-validate` recipe, and the dev

@@ -8,14 +8,7 @@
 //   check_plugin.ts --footprint <id> print the files that belong to one client
 import { join } from "@std/path";
 import { parse as parseToml } from "@std/toml";
-import {
-  clientById,
-  CLIENTS,
-  ClientSpec,
-  enabledClients,
-  footprint,
-  isEnabled,
-} from "./lib/clients.ts";
+import { clientById, CLIENTS, ClientSpec, footprint } from "./lib/clients.ts";
 import { exists, fail, Findings, isDirectory, listDir, readText } from "./lib/findings.ts";
 import {
   agentHeader,
@@ -216,8 +209,7 @@ interface AgentFile {
 /** Returns agent names → files per client, after per-file checks. */
 function checkAgents(): Map<string, AgentFile[]> {
   const byName = new Map<string, AgentFile[]>();
-  const enabled = enabledClients(root);
-  for (const client of enabled) {
+  for (const client of CLIENTS) {
     const spec = client.agents;
     if (!spec) {
       // The client's plugin system carries no agents (compatibility watch W2,
@@ -281,7 +273,7 @@ function checkAgents(): Map<string, AgentFile[]> {
     }
   }
   for (const [name, files] of byName) {
-    for (const client of enabled) {
+    for (const client of CLIENTS) {
       const spec = client.agents;
       if (!spec) continue;
       if (!files.some((f) => f.client === client)) {
@@ -309,21 +301,30 @@ function checkAgents(): Map<string, AgentFile[]> {
 }
 
 function checkCodex(manifest: PluginManifest) {
-  const client = clientById("codex");
-  const enabled = isEnabled(root, client);
-  const hasExtension = manifest.extensions?.["com.openai"] !== undefined;
-  if (enabled !== hasExtension) {
+  // Every extensions block must belong to a supported client (Agent Plugins §8
+  // namespaces); a block for a client this project dropped is dead data.
+  const namespaces = new Set(CLIENTS.map((c) => c.namespaceDir));
+  for (const ns of Object.keys(manifest.extensions ?? {})) {
+    if (namespaces.has(ns)) continue;
     findings.add({
-      file: enabled ? "plugin.json" : client.namespaceDir,
-      rule: "codex-switch",
-      problem: enabled
-        ? "com.openai/ exists but plugin.json has no extensions.com.openai."
-        : "plugin.json has extensions.com.openai but com.openai/ is absent.",
-      fix:
-        "keep the directory and the extension block together: add the missing one or remove both.",
+      file: "plugin.json",
+      rule: "extension-namespace",
+      problem: `extensions.${ns} belongs to no supported client.`,
+      fix: "remove the block, or register the client in scripts/lib/clients.ts.",
     });
   }
-  if (!enabled) return;
+  const client = CLIENTS.find((c) => c.id === "codex");
+  if (!client) return;
+  if (manifest.extensions?.["com.openai"] === undefined) {
+    findings.add({
+      file: "plugin.json",
+      rule: "codex-extension",
+      problem: "Codex is a supported client but extensions.com.openai is missing.",
+      fix:
+        "add the block with interface.{displayName,shortDescription,developerName,category}, or drop Codex from scripts/lib/clients.ts.",
+    });
+    return;
+  }
   const iface =
     (manifest.extensions?.["com.openai"] as { interface?: Record<string, unknown> }).interface ??
       {};

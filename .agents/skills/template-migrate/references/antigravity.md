@@ -24,7 +24,7 @@ with `mcp_config.json`, `agents/`, `rules/`, `workflows/`, `hooks.json`.
   reported.
 - `agents/<n>.md`: Antigravity plugin agents live at the plugin root only,
   which this layout keeps portable, so the file does not join the plugin.
-  When Claude Code is enabled, write `com.anthropic.claude-code/agents/<n>.md`
+  When Claude Code is a supported client, write `com.anthropic.claude-code/agents/<n>.md`
   from its body, translating tool names (`view_file`→`Read`,
   `grep_search`→`Grep`, ...); otherwise report it as unmapped.
 - `rules/*.md`, `GEMINI.md`: fold into `AGENTS.md` or `.agents/knowledge/`;

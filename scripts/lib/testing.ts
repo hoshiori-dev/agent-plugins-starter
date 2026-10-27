@@ -92,7 +92,7 @@ const skill = (name: string) =>
   `---\nname: ${name}\ndescription: Fixture skill ${name}. Use when testing.\n---\n# ${name}\n`;
 const mdAgent = (name: string) => `---\nname: ${name}\ndescription: Fixture agent.\n---\nBody.\n`;
 
-/** A complete, valid plugin with all three clients enabled. */
+/** A complete, valid plugin for every registered client. */
 export function fixturePlugin(): Record<string, FileSpec> {
   return {
     "plugin.json": JSON.stringify(MANIFEST, null, 2) + "\n",
@@ -100,9 +100,7 @@ export function fixturePlugin(): Record<string, FileSpec> {
     "mcp/local/server.ts": "// server\n",
     "config.json": "{}\n",
     "skills/alpha/SKILL.md": skill("alpha"),
-    "com.openai/README.md": "# com.openai\n",
     "com.anthropic.claude-code/agents/reviewer.md": mdAgent("reviewer"),
-    "com.google.antigravity/README.md": "# com.google.antigravity\n",
     ".codex/config.toml": '[plugins."fixture-plugin@fixture-plugin"]\nenabled = true\n',
     "openspec/specs/skill/spec.md": "# Skill Catalog\n",
     "openspec/specs/skill/alpha/spec.md": "# alpha\n",

@@ -1,6 +1,6 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { join } from "@std/path";
-import { fixturePlugin, makeTree, runScript, writeTree } from "./lib/testing.ts";
+import { fixturePlugin, makeTree, MANIFEST, runScript, writeTree } from "./lib/testing.ts";
 
 Deno.test("check_plugin passes on the fixture plugin", () => {
   const root = makeTree(fixturePlugin());
@@ -31,7 +31,7 @@ Deno.test("check_plugin reports layout and wiring findings", () => {
   ) assertStringIncludes(result.output, expected);
 });
 
-Deno.test("check_plugin ties the Codex directory to the extension block and config", () => {
+Deno.test("check_plugin requires the Codex extension block and config for a supported Codex", () => {
   const files = fixturePlugin();
   files[".codex/config.toml"] = '[plugins."fixture-plugin@fixture-plugin"]\nenabled = false\n';
   const root = makeTree(files);
@@ -39,9 +39,12 @@ Deno.test("check_plugin ties the Codex directory to the extension block and conf
   assertEquals(result.code, 1);
   assertStringIncludes(result.output, ".codex/config.toml: codex-plugin-enabled");
 
-  Deno.removeSync(join(root, "com.openai"), { recursive: true });
-  const noDir = runScript("check_plugin.ts", [], root);
-  assertStringIncludes(noDir.output, "com.openai: codex-switch");
+  const manifest = structuredClone(MANIFEST) as Record<string, unknown>;
+  manifest.extensions = { "com.example": {} };
+  writeTree(root, { "plugin.json": JSON.stringify(manifest) + "\n" });
+  const noBlock = runScript("check_plugin.ts", [], root);
+  assertStringIncludes(noBlock.output, "plugin.json: extension-namespace");
+  assertStringIncludes(noBlock.output, "plugin.json: codex-extension");
 });
 
 Deno.test("check_plugin skips catalogs loudly when openspec is absent", () => {
@@ -54,7 +57,13 @@ Deno.test("check_plugin skips catalogs loudly when openspec is absent", () => {
 
 Deno.test("check_plugin --footprint lists a client's files", () => {
   const root = makeTree(fixturePlugin());
+  runScript("gen.ts", [], root);
   const result = runScript("check_plugin.ts", ["--footprint", "antigravity"], root);
   assertEquals(result.code, 0);
-  assertEquals(result.output.trim().split("\n"), ["com.google.antigravity", "mcp_config.json"]);
+  assertEquals(result.output.trim().split("\n"), ["mcp_config.json"]);
+  const codex = runScript("check_plugin.ts", ["--footprint", "codex"], root);
+  assertEquals(codex.output.trim().split("\n"), [
+    ".agents/plugins/marketplace.json",
+    ".codex/config.toml",
+  ]);
 });

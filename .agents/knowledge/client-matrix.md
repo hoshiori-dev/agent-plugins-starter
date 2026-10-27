@@ -25,9 +25,14 @@ hand-written client file when fields differ (agents). Agents ship only where
 the client's plugin system has an agents component (Claude Code); a client
 without one gets no agent files at all, and the limitation is a watch-list
 row rather than a workspace workaround, because workspace wiring is not
-plugin content and would only exist to test itself. `scripts/lib/clients.ts`
-is the registry of these facts (`agents` absent means the client ships none);
-`just client-footprint <id>` prints a client's files.
+plugin content and would only exist to test itself. Which clients are
+supported is a project decision declared in `scripts/lib/clients.ts`, never
+inferred from the tree; the registry also records where each client's files
+live (`agents` absent means the client ships none). A reverse-domain
+directory exists only while a client has hand-written files, so today only
+`com.anthropic.claude-code/` does; Codex's client-specific data is the
+`extensions.com.openai` block, and Antigravity has none. `just
+client-footprint <id>` prints the files a client owns.
 
 ## Known limitations
 

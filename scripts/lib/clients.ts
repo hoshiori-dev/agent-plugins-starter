@@ -1,16 +1,22 @@
-// The client registry: the one place that knows which coding-agent clients
+// The client registry: the one place that declares which coding-agent clients
 // this plugin supports, where each keeps its files, and what `gen.ts`
-// produces for it. A client is enabled when its namespace directory exists;
-// deleting that directory (and the files `footprint` lists) removes the
-// client from the template.
+// produces for it. Supporting a client is a project decision recorded here,
+// never inferred from the tree. To drop a client: run
+// `just client-footprint <id>`, delete those files, then remove the entry and
+// its id from `ClientId`; the type checker then points at every branch in
+// `gen.ts` and `check_plugin.ts` that has to go.
 import { join } from "@std/path";
-import { isDirectory } from "./findings.ts";
+import { exists, isDirectory } from "./findings.ts";
 
 export type ClientId = "codex" | "claude-code" | "antigravity";
 
 export interface ClientSpec {
   id: ClientId;
-  /** Reverse-domain namespace directory at the plugin root (Agent Plugins §8). */
+  /**
+   * Reverse-domain directory for the client's hand-written files (Agent
+   * Plugins §8). It exists only while the client has such files; today only
+   * Claude Code does.
+   */
   namespaceDir: string;
   /**
    * Where this client's hand-written agent files live and their extension.
@@ -66,21 +72,13 @@ export function clientById(id: string): ClientSpec {
   return client;
 }
 
-export function isEnabled(root: string, client: ClientSpec): boolean {
-  return isDirectory(join(root, client.namespaceDir));
-}
-
-export function enabledClients(root: string): ClientSpec[] {
-  return CLIENTS.filter((c) => isEnabled(root, c));
-}
-
-/** Every path that belongs to a client: what removing the client deletes. */
-export function footprint(client: ClientSpec, _root: string): string[] {
+/** Every existing path that belongs to a client: what dropping the client deletes. */
+export function footprint(client: ClientSpec, root: string): string[] {
   const paths = new Set<string>([
     client.namespaceDir,
     ...client.wiringFiles,
     ...client.generatedFiles,
     ...client.links.map((l) => l.path),
   ]);
-  return [...paths].sort();
+  return [...paths].filter((p) => isDirectory(join(root, p)) || exists(join(root, p))).sort();
 }

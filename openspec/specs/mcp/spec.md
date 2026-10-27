@@ -26,7 +26,7 @@ The Claude Code and Antigravity MCP files SHALL be produced by `just gen` from
 generation fail with the server name and the fix, rather than be dropped.
 
 #### Scenario: Unsupported feature for a client
-- **WHEN** `mcp.json` declares `cwd` on a stdio server, or an `sse` server while Antigravity is enabled
+- **WHEN** `mcp.json` declares `cwd` on a stdio server, or an `sse` server while Antigravity is a supported client
 - **THEN** `just gen` exits with an error naming the server, the feature, and the client
 
 #### Scenario: Hand-edited generated file

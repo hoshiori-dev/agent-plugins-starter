@@ -3,7 +3,7 @@
 ## Purpose
 Rules shared by every agent this plugin ships. Agents are outside the Agent
 Plugins v1.0.0 specification, so each agent exists as one hand-written file per
-enabled client whose plugin system carries agents, under that client's
+supported client whose plugin system carries agents, under that client's
 namespace directory: today Claude Code only
 (`com.anthropic.claude-code/agents/<name>.md`, listed in the generated
 `.claude-plugin/plugin.json`). Codex plugins have no agents component, and
@@ -17,7 +17,7 @@ MCP. Each agent has its own spec at `openspec/specs/agent/<name>/spec.md`.
 ## Requirements
 
 ### Requirement: One version per agent-capable client
-Every agent SHALL have a file for each enabled client whose plugin system
+Every agent SHALL have a file for each supported client whose plugin system
 carries agents, named `<name>` plus the client's extension, whose `name` field
 equals `<name>` and whose `description` text is identical across clients. A
 client whose plugin system carries no agents SHALL have no `agents/` directory

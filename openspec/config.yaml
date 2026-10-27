@@ -6,7 +6,7 @@ context: |
   Specs are organised as catalogs: openspec/specs/<catalog>/spec.md holds the
   rules every entry of that catalog follows, and openspec/specs/<catalog>/<name>/spec.md
   describes one shipped entry. The catalogs are skill (skills/<name>/),
-  mcp (servers in mcp.json), and agent (one file per enabled client whose
+  mcp (servers in mcp.json), and agent (one file per supported client whose
   plugin system carries agents, under com.*/agents/; Claude Code today).
   Every shipped entry has exactly one spec and every spec has
   exactly one shipped entry; `just validate` enforces the pairing.

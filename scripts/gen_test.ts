@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { assertEquals, assertStringIncludes } from "@std/assert";
 import { join } from "@std/path";
 import { fixturePlugin, makeTree, MCP, runScript, writeTree } from "./lib/testing.ts";
 
@@ -48,22 +48,13 @@ Deno.test("gen --check reports stale, missing, and orphan files", () => {
   assertStringIncludes(check.output, "com.anthropic.claude-code/mcp.json: gen-stale");
   assertStringIncludes(check.output, ".agents/plugins/marketplace.json: gen-missing");
 
-  // Disabling a client leaves its generated files behind: orphans.
-  Deno.removeSync(join(root, "com.anthropic.claude-code"), { recursive: true });
+  // Removing mcp.json leaves the MCP conversions behind: orphans.
+  runScript("gen.ts", [], root);
+  Deno.removeSync(join(root, "mcp.json"));
   const orphan = runScript("gen.ts", ["--check"], root);
   assertEquals(orphan.code, 1);
-  assertStringIncludes(orphan.output, ".claude-plugin/plugin.json: gen-orphan");
-  assertStringIncludes(orphan.output, "client claude-code is disabled");
-});
-
-Deno.test("gen only generates for enabled clients", () => {
-  const files = fixturePlugin();
-  delete files["com.google.antigravity/README.md"];
-  const root = makeTree(files);
-  const list = runScript("gen.ts", ["--list"], root);
-  assertEquals(list.code, 0, list.output);
-  assert(!list.output.includes("com.google.antigravity"), list.output);
-  assertStringIncludes(list.output, ".claude-plugin/plugin.json");
+  assertStringIncludes(orphan.output, "com.anthropic.claude-code/mcp.json: gen-orphan");
+  assertStringIncludes(orphan.output, "mcp_config.json: gen-orphan");
 });
 
 Deno.test("gen fails fast on features a client cannot express", () => {

@@ -25,7 +25,7 @@ with `extensions.com.openai`, or a `config.toml` with `[mcp_servers.*]` or
   `required`, `*_timeout_sec`, `enabled_tools`, `disabled_tools`, approval
   modes → reported as unmapped (policy, not declaration).
 - `.codex/agents/<n>.toml` or `[agents.<n>] config_file`: not plugin content
-  in Codex. When Claude Code is enabled, write
+  in Codex. When Claude Code is a supported client, write
   `com.anthropic.claude-code/agents/<n>.md` from `developer_instructions`;
   otherwise leave the role in the user's own `.codex/config.toml` and report
   it as unmapped.
