@@ -1,10 +1,13 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run=git
 // Builds the release archive: the plugin payload (portable files, bundled
-// server code, client namespaces) as dist/<name>-<version>.zip from the
+// server code, client namespaces, and every registered client's generated
+// files, without which the archive loads in no client that needs a pointer
+// manifest or a converted MCP file) as dist/<name>-<version>.zip from the
 // committed tree, so untracked files never ship.
 //
 //   dist.ts [--tag vX.Y.Z]   with --tag, fail unless X.Y.Z equals plugin.json#version
 import { join } from "@std/path";
+import { CLIENTS } from "./lib/clients.ts";
 import { fail } from "./lib/findings.ts";
 import { loadManifest } from "./lib/plugin.ts";
 
@@ -38,6 +41,9 @@ const payload = [
   ...[...Deno.readDirSync(root)].filter((e) => e.isDirectory && e.name.startsWith("com.")).map((
     e,
   ) => e.name),
+  // The generated client files: without them the archive loads in no client
+  // that needs a pointer manifest or a converted MCP file (client-matrix.md).
+  ...CLIENTS.flatMap((c) => c.generatedFiles),
 ].filter((p) => {
   try {
     Deno.lstatSync(join(root, p));

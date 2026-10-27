@@ -17,6 +17,8 @@
 // label falls back to `spec: pending` and the record is marked withdrawn. Every
 // path the code cannot decide ends without `spec: approved`.
 
+import { parse as parseYaml } from "@std/yaml";
+
 export const SKIPPED = "spec: skipped";
 export const PENDING = "spec: pending";
 export const APPROVED = "spec: approved";
@@ -276,9 +278,21 @@ export async function allSkipSpecs(
       e.type === "blob" && e.path === `${CHANGES_DIR}${change}/.openspec.yaml`
     );
     if (!marker) return false;
-    if (!/^\s*skip_specs\s*:\s*true\s*$/m.test(await api.blob(marker.sha))) return false;
+    if (!skipSpecs(await api.blob(marker.sha))) return false;
   }
   return true;
+}
+
+/** True only for a parseable YAML document whose top-level `skip_specs` is the boolean true. */
+export function skipSpecs(yaml: string): boolean {
+  let doc: unknown;
+  try {
+    doc = parseYaml(yaml);
+  } catch {
+    return false;
+  }
+  return typeof doc === "object" && doc !== null &&
+    (doc as { skip_specs?: unknown }).skip_specs === true;
 }
 
 async function refuse(

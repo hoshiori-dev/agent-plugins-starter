@@ -264,6 +264,25 @@ Deno.test("a change whose .openspec.yaml sets skip_specs: true is spec-less", as
   );
 });
 
+Deno.test("skip_specs is read as a YAML document, not as text", async () => {
+  const { skipSpecs } = await import("./pr_labels.ts");
+  assertEquals(skipSpecs("schema: spec-driven\nskip_specs: true\n"), true);
+  assertEquals(
+    skipSpecs("notes: |\n  skip_specs: true\nskip_specs: false\n"),
+    false,
+    "block scalar",
+  );
+  assertEquals(skipSpecs("nested:\n  skip_specs: true\n"), false, "nested");
+  assertEquals(skipSpecs('skip_specs: "true"\n'), false, "string");
+  assertEquals(skipSpecs("skip_specs: [unclosed\n"), false, "invalid yaml");
+  const marker = blob("openspec/changes/add-thing/.openspec.yaml", "5".repeat(40));
+  const tricked = fake({
+    entries: [...ARCHIVE, ...CHANGE, marker],
+    blobs: { ["5".repeat(40)]: "notes: |\n  skip_specs: true\nskip_specs: false\n" },
+  });
+  assertEquals((await decide(tricked, null)).state, PENDING);
+});
+
 Deno.test("an approval whose timeline entry has not appeared yet is still recorded", async () => {
   const d = await decide(fake({ events: [] }), approveEvent);
   assertEquals(d.state, APPROVED);

@@ -16,7 +16,17 @@ for (const arg of Deno.args) {
 }
 
 const wanted = readJson(".github/labels.json") as Label[];
+if (!Array.isArray(wanted)) fail(".github/labels.json: expected an array of labels");
 for (const label of wanted) {
+  for (const field of ["name", "color", "description"] as const) {
+    if (typeof label?.[field] !== "string") {
+      fail(
+        `.github/labels.json: label ${
+          JSON.stringify(label?.name ?? label)
+        } needs a string "${field}"`,
+      );
+    }
+  }
   if (!/^[0-9a-fA-F]{6}$/.test(label.color)) {
     fail(`.github/labels.json: label "${label.name}" color must be 6 hex digits without #`);
   }
