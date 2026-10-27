@@ -6,8 +6,9 @@ context: |
   Specs are organised as catalogs: openspec/specs/<catalog>/spec.md holds the
   rules every entry of that catalog follows, and openspec/specs/<catalog>/<name>/spec.md
   describes one shipped entry. The catalogs are skill (skills/<name>/),
-  mcp (servers in mcp.json), and agent (one file per enabled client under
-  com.*/agents/). Every shipped entry has exactly one spec and every spec has
+  mcp (servers in mcp.json), and agent (one file per enabled client whose
+  plugin system carries agents, under com.*/agents/; Claude Code today).
+  Every shipped entry has exactly one spec and every spec has
   exactly one shipped entry; `just validate` enforces the pairing.
   A change to the harness, scripts, CI, documentation, or generated client
   files is spec-less: set skip_specs: true in its .openspec.yaml and ship

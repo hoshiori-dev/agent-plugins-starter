@@ -2,11 +2,10 @@
 
 ## Purpose
 A read-only reviewer that audits an Agent Plugins package against the v1.0.0
-specification. It ships to Claude Code through the plugin; for Codex and
-Antigravity it is available only inside this workspace (`.codex/config.toml`
-and the `.agents/agents/` symlink), because neither client loads agents from a
-plugin's namespace directory. It exists to demonstrate the per-client agent
-layout and is removed by the template tailoring procedure.
+specification. It ships to Claude Code through the plugin, the only enabled
+client whose plugin system carries agents; Codex and Antigravity get no version
+(agent catalog spec, Purpose). It exists to demonstrate the client-specific
+agent layout and is removed by the template tailoring procedure.
 
 ## Requirements
 

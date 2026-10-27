@@ -19,11 +19,8 @@ else.
 - Loads the root `plugin.json`, `mcp.json`, and `skills/` through a
   marketplace: `codex plugin marketplace add <repo>` then
   `codex plugin add agent-plugins-starter@agent-plugins-starter`.
-- Agents: not shipped by plugins, so report `not shipped` outside this
-  repository. Inside the repository the role is declared in
-  `.codex/config.toml` (`[agents.example-agent]`) and may be reported `ok`;
-  elsewhere copy `com.openai/agents/example-agent.toml` and declare it in
-  your own config.
+- Agents: Codex plugins carry no agents, so this plugin ships none to Codex;
+  report `not shipped`.
 
 ## Antigravity
 
@@ -32,10 +29,7 @@ else.
   on). Install: `agy plugin install https://github.com/<owner>/<repo>` or
   `agy plugin install <clone>`; remove with `agy plugin uninstall <name>`.
 - Agents: not shipped. Antigravity reads plugin agents only from the plugin
-  root, which this plugin keeps for portable files. Inside the repository the
-  symlink `.agents/agents/example-agent.md` makes `example-agent` available;
-  elsewhere copy `com.google.antigravity/agents/example-agent.md` into your
-  project's `.agents/agents/`.
+  root, which this plugin keeps for portable files; report `not shipped`.
 
 ## Other Agent Plugins clients
 

@@ -31,22 +31,20 @@ procedure removes what the project will not use and leaves `just check` green.
    continue with step 3.
 3. **Remove the examples.** Delete `skills/example-skill/`,
    `mcp/example-server/`, the `example-server` entry in `mcp.json` (delete
-   `mcp.json` if empty), every `com.*/agents/example-agent.*`, the
-   `.agents/agents/example-agent.md` link, the `[agents.example-agent]` table
-   in `.codex/config.toml`, and
+   `mcp.json` if empty), every `com.*/agents/example-agent.*`, and
    `openspec/specs/{skill/example-skill,mcp/example-server,agent/example-agent}/`.
 4. **Remove unused clients.** For each dropped client, `just client-footprint
    <id>` lists its files; delete them all. Dropping Codex also deletes
    `extensions.com.openai` from `plugin.json` and `.codex/`; dropping Claude
    Code deletes `.claude-plugin/`; dropping Antigravity deletes
-   the root `mcp_config.json` and the `.agents/agents/*.md` links. Update
+   the root `mcp_config.json`. Update
    `.agents/knowledge/client-matrix.md`,
    `openspec/specs/agent/spec.md`, `README.md`, and the
    `.devcontainer/devcontainer.json` features for the dropped clients.
 5. **Remove unused catalogs.** Delete `openspec/specs/<catalog>/`, the catalog
    entry in `scripts/check_plugin.ts`, and its row in `openspec/config.yaml`
    context; without `mcp` also delete `mcp.json` and `mcp/`; without `agent`
-   also delete every `com.*/agents/` and the Codex agent tables.
+   also delete every `com.*/agents/`.
 6. **Rename.** Set the identity fields in `plugin.json` (`name` must satisfy
    `^[a-z0-9][a-z0-9-]*$`), the `[plugins."<name>@<name>"]` key in
    `.codex/config.toml`, the owner in `.github/CODEOWNERS`, and every
@@ -77,5 +75,5 @@ procedure removes what the project will not use and leaves `just check` green.
 - Removing a client while keeping agents must remove that client's agent
   files too, or `agent-parity` fails for the remaining clients.
 - `.agents/` is shared ground: Codex (`.agents/plugins/marketplace.json`,
-  skills), Antigravity (`.agents/agents/*.md` links, skills), and OpenSpec
-  (`.agents/skills/openspec-*`). Delete only the dropped client's files.
+  skills), Antigravity (skills), and OpenSpec (`.agents/skills/openspec-*`).
+  Delete only the dropped client's files.

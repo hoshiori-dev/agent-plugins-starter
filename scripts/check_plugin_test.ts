@@ -13,7 +13,7 @@ Deno.test("check_plugin reports layout and wiring findings", () => {
   writeTree(root, {
     "skills/beta/SKILL.md": "---\nname: Beta\ndescription: x\n---\n",
     ".agents/skills/alpha/SKILL.md": "---\nname: alpha\ndescription: project skill\n---\n",
-    "com.anthropic.claude-code/agents/extra.md": "---\nname: extra\ndescription: Only here.\n---\n",
+    "com.openai/agents/rogue.toml": 'name = "rogue"\ndescription = "Codex cannot ship this."\n',
     "openspec/specs/mcp/ghost/spec.md": "# ghost\n",
   });
   Deno.removeSync(join(root, "openspec/specs/skill/alpha/spec.md"));
@@ -23,8 +23,7 @@ Deno.test("check_plugin reports layout and wiring findings", () => {
     const expected of [
       "skills/beta/SKILL.md: skill-name",
       "skills/alpha/SKILL.md: skill-name-collision",
-      "com.openai/agents/extra.toml: agent-parity",
-      "com.google.antigravity/agents/extra.md: agent-parity",
+      "com.openai/agents: agent-unsupported",
       "openspec/specs/skill/alpha/spec.md: catalog-missing-spec",
       "openspec/specs/mcp/ghost/spec.md: catalog-orphan-spec",
       "openspec/specs/skill/beta/spec.md: catalog-missing-spec",
@@ -39,7 +38,6 @@ Deno.test("check_plugin ties the Codex directory to the extension block and conf
   const result = runScript("check_plugin.ts", [], root);
   assertEquals(result.code, 1);
   assertStringIncludes(result.output, ".codex/config.toml: codex-plugin-enabled");
-  assertStringIncludes(result.output, ".codex/config.toml: codex-agent-wiring");
 
   Deno.removeSync(join(root, "com.openai"), { recursive: true });
   const noDir = runScript("check_plugin.ts", [], root);
@@ -58,9 +56,5 @@ Deno.test("check_plugin --footprint lists a client's files", () => {
   const root = makeTree(fixturePlugin());
   const result = runScript("check_plugin.ts", ["--footprint", "antigravity"], root);
   assertEquals(result.code, 0);
-  assertEquals(result.output.trim().split("\n"), [
-    ".agents/agents/reviewer.md",
-    "com.google.antigravity",
-    "mcp_config.json",
-  ]);
+  assertEquals(result.output.trim().split("\n"), ["com.google.antigravity", "mcp_config.json"]);
 });

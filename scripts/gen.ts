@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run=git
 // Generates the client-specific files that can be derived from the portable
-// plugin files (plugin.json, mcp.json, and the agents directories):
+// plugin files (plugin.json, mcp.json, and the agents directory of a client
+// whose plugin system carries agents):
 //
 //   Claude Code   .claude-plugin/plugin.json, com.anthropic.claude-code/mcp.json
 //   Antigravity   mcp_config.json (transitional, until its Agent Plugins flag is on)
@@ -117,11 +118,13 @@ function generate(
 }
 
 function agentFiles(client: ClientSpec): string[] {
-  const dir = join(root, client.agents.dir);
+  const spec = client.agents;
+  if (!spec) return [];
+  const dir = join(root, spec.dir);
   if (!exists(dir)) return [];
   return listDir(dir)
-    .filter((e) => e.isFile && e.name.endsWith(client.agents.ext))
-    .map((e) => `${client.agents.dir}/${e.name}`);
+    .filter((e) => e.isFile && e.name.endsWith(spec.ext))
+    .map((e) => `${spec.dir}/${e.name}`);
 }
 
 function generateClaudeCode(client: ClientSpec, manifest: PluginManifest, mcp: McpFile | null) {

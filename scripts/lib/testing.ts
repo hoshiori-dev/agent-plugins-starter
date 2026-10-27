@@ -91,8 +91,6 @@ export const MCP = {
 const skill = (name: string) =>
   `---\nname: ${name}\ndescription: Fixture skill ${name}. Use when testing.\n---\n# ${name}\n`;
 const mdAgent = (name: string) => `---\nname: ${name}\ndescription: Fixture agent.\n---\nBody.\n`;
-const tomlAgent = (name: string) =>
-  `name = "${name}"\ndescription = "Fixture agent."\ndeveloper_instructions = "Body."\n`;
 
 /** A complete, valid plugin with all three clients enabled. */
 export function fixturePlugin(): Record<string, FileSpec> {
@@ -102,12 +100,10 @@ export function fixturePlugin(): Record<string, FileSpec> {
     "mcp/local/server.ts": "// server\n",
     "config.json": "{}\n",
     "skills/alpha/SKILL.md": skill("alpha"),
-    "com.openai/agents/reviewer.toml": tomlAgent("reviewer"),
+    "com.openai/README.md": "# com.openai\n",
     "com.anthropic.claude-code/agents/reviewer.md": mdAgent("reviewer"),
-    "com.google.antigravity/agents/reviewer.md": mdAgent("reviewer"),
-    ".agents/agents/reviewer.md": { symlink: "../../com.google.antigravity/agents/reviewer.md" },
-    ".codex/config.toml":
-      '[plugins."fixture-plugin@fixture-plugin"]\nenabled = true\n\n[agents.reviewer]\ndescription = "Fixture agent."\nconfig_file = "../com.openai/agents/reviewer.toml"\n',
+    "com.google.antigravity/README.md": "# com.google.antigravity\n",
+    ".codex/config.toml": '[plugins."fixture-plugin@fixture-plugin"]\nenabled = true\n',
     "openspec/specs/skill/spec.md": "# Skill Catalog\n",
     "openspec/specs/skill/alpha/spec.md": "# alpha\n",
     "openspec/specs/mcp/spec.md": "# MCP Catalog\n",

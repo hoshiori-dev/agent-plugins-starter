@@ -6,10 +6,9 @@
 //
 //   check_plugin.ts                  run every rule
 //   check_plugin.ts --footprint <id> print the files that belong to one client
-import { dirname, join, normalize, relative } from "@std/path";
+import { join } from "@std/path";
 import { parse as parseToml } from "@std/toml";
 import {
-  agentFileNames,
   clientById,
   CLIENTS,
   ClientSpec,
@@ -17,15 +16,7 @@ import {
   footprint,
   isEnabled,
 } from "./lib/clients.ts";
-import {
-  exists,
-  fail,
-  Findings,
-  isDirectory,
-  listDir,
-  readLinkOrNull,
-  readText,
-} from "./lib/findings.ts";
+import { exists, fail, Findings, isDirectory, listDir, readText } from "./lib/findings.ts";
 import {
   agentHeader,
   frontmatter,
@@ -79,8 +70,7 @@ checkName(manifest);
 checkMcp(mcp);
 const skills = checkSkills();
 const agents = checkAgents();
-checkCodex(manifest, agents);
-checkAntigravity();
+checkCodex(manifest);
 checkCatalogs(skills, mcp, agents);
 Deno.exit(findings.report("check_plugin"));
 
@@ -228,21 +218,37 @@ function checkAgents(): Map<string, AgentFile[]> {
   const byName = new Map<string, AgentFile[]>();
   const enabled = enabledClients(root);
   for (const client of enabled) {
-    const dir = join(root, client.agents.dir);
+    const spec = client.agents;
+    if (!spec) {
+      // The client's plugin system carries no agents (compatibility watch W2,
+      // W9): an agents directory under its namespace would ship to nobody.
+      const stray = `${client.namespaceDir}/agents`;
+      if (isDirectory(join(root, stray))) {
+        findings.add({
+          file: stray,
+          rule: "agent-unsupported",
+          problem: `${client.id} plugins carry no agents, so nothing loads this directory.`,
+          fix:
+            "remove it; keep the role in the client's own workspace configuration, outside the plugin.",
+        });
+      }
+      continue;
+    }
+    const dir = join(root, spec.dir);
     if (!isDirectory(dir)) continue;
     for (const entry of listDir(dir)) {
       if (!entry.isFile) continue;
-      const file = `${client.agents.dir}/${entry.name}`;
-      if (!entry.name.endsWith(client.agents.ext)) {
+      const file = `${spec.dir}/${entry.name}`;
+      if (!entry.name.endsWith(spec.ext)) {
         findings.add({
           file,
           rule: "agent-extension",
-          problem: `${client.id} agents are ${client.agents.ext} files.`,
+          problem: `${client.id} agents are ${spec.ext} files.`,
           fix: `rename the file or move it to the right client directory.`,
         });
         continue;
       }
-      const stem = entry.name.slice(0, -client.agents.ext.length);
+      const stem = entry.name.slice(0, -spec.ext.length);
       const header = agentHeader(join(root, file));
       if (header === null || header.name === undefined) {
         findings.add({
@@ -258,7 +264,7 @@ function checkAgents(): Map<string, AgentFile[]> {
           file,
           rule: "agent-name",
           problem: `name "${header.name}" differs from the file name.`,
-          fix: `rename the file to ${header.name}${client.agents.ext} or set name to ${stem}.`,
+          fix: `rename the file to ${header.name}${spec.ext} or set name to ${stem}.`,
         });
       }
       if (!header.description) {
@@ -276,9 +282,11 @@ function checkAgents(): Map<string, AgentFile[]> {
   }
   for (const [name, files] of byName) {
     for (const client of enabled) {
+      const spec = client.agents;
+      if (!spec) continue;
       if (!files.some((f) => f.client === client)) {
         findings.add({
-          file: `${client.agents.dir}/${name}${client.agents.ext}`,
+          file: `${spec.dir}/${name}${spec.ext}`,
           rule: "agent-parity",
           problem: `agent "${name}" exists for ${
             files.map((f) => f.client.id).join(", ")
@@ -300,7 +308,7 @@ function checkAgents(): Map<string, AgentFile[]> {
   return byName;
 }
 
-function checkCodex(manifest: PluginManifest, agents: Map<string, AgentFile[]>) {
+function checkCodex(manifest: PluginManifest) {
   const client = clientById("codex");
   const enabled = isEnabled(root, client);
   const hasExtension = manifest.extensions?.["com.openai"] !== undefined;
@@ -340,7 +348,7 @@ function checkCodex(manifest: PluginManifest, agents: Map<string, AgentFile[]>) 
       file: configPath,
       rule: "codex-wiring",
       problem: "file is missing.",
-      fix: "create it with the [plugins] and [agents.<name>] tables (see com.openai/README.md).",
+      fix: "create it with the [plugins] table (see com.openai/README.md).",
     });
     return;
   }
@@ -359,58 +367,6 @@ function checkCodex(manifest: PluginManifest, agents: Map<string, AgentFile[]>) 
       problem: `no [plugins."${key}"] enabled = true.`,
       fix: "add that table so the local marketplace plugin is enabled for this project.",
     });
-  }
-  const roles = (config.agents ?? {}) as Record<string, unknown>;
-  const configured = new Map<string, string>();
-  for (const [name, role] of Object.entries(roles)) {
-    if (typeof role !== "object" || role === null || !("config_file" in role)) continue; // global [agents] keys
-    const target = normalize(
-      join(dirname(configPath), String((role as { config_file: string }).config_file)),
-    );
-    configured.set(name, target);
-    if (!exists(join(root, target))) {
-      findings.add({
-        file: configPath,
-        rule: "codex-agent-wiring",
-        problem: `[agents.${name}] config_file points to ${target}, which does not exist.`,
-        fix: "correct the path or remove the table.",
-      });
-    }
-  }
-  for (const [name, files] of agents) {
-    const codexFile = files.find((f) => f.client === client);
-    if (!codexFile) continue;
-    if (configured.get(name) !== codexFile.file) {
-      findings.add({
-        file: configPath,
-        rule: "codex-agent-wiring",
-        problem: `no [agents.${name}] table pointing to ${codexFile.file}.`,
-        fix: `add [agents.${name}] with config_file = "${
-          relative(dirname(configPath), codexFile.file)
-        }".`,
-      });
-    }
-  }
-}
-
-function checkAntigravity() {
-  const client = clientById("antigravity");
-  if (!isEnabled(root, client)) return;
-  const agentLinks = client.agentLinks!;
-  for (const name of agentFileNames(root, client)) {
-    const linkPath = `${agentLinks.dir}/${name}`;
-    const expected = `${agentLinks.targetPrefix}/${name}`;
-    const actual = readLinkOrNull(join(root, linkPath));
-    if (actual !== expected) {
-      findings.add({
-        file: linkPath,
-        rule: "antigravity-agent-wiring",
-        problem: actual === null
-          ? "missing; Antigravity reads workspace agents from .agents/agents/ and plugins carry no agents."
-          : `points to ${actual}.`,
-        fix: `ln -sfn ${expected} ${linkPath}`,
-      });
-    }
   }
 }
 

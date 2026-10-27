@@ -9,13 +9,16 @@ ships three example components, one per kind the template supports:
 |---|---|---|
 | Skill | `example-skill`, a smoke check of the plugin itself | `skills/example-skill/` (portable, every client) |
 | MCP server | `example-server`, a Deno stdio server with one `echo` tool | `mcp.json` + `mcp/example-server/` (portable; converted for Claude Code and Antigravity) |
-| Agent | `example-agent`, a read-only package reviewer | one file per client under `com.openai/`, `com.anthropic.claude-code/`, `com.google.antigravity/`; shipped only to Claude Code, whose plugin system has an agents component |
+| Agent | `example-agent`, a read-only package reviewer | `com.anthropic.claude-code/agents/` (Claude Code only: the one client whose plugin system carries agents) |
 
-Agents are not part of the specification, so each client gets its own version
-under its reverse-domain directory and the client's own mechanism points at
-it; everything else follows the spec and is either read natively (Codex,
-Antigravity) or derived by `just gen` (Claude Code's pointer manifest and MCP
-file, Antigravity's transitional `mcp_config.json`).
+Agents are not part of the specification. A client whose plugin system
+carries agents gets a hand-written version under its reverse-domain directory
+(Claude Code today); a client whose plugin system does not (Codex,
+Antigravity) gets none, and the limitation is recorded in
+`.agents/knowledge/compatibility-watch.md`. Everything else follows the spec
+and is either read natively (Codex, Antigravity) or derived by `just gen`
+(Claude Code's pointer manifest and MCP file, Antigravity's transitional
+`mcp_config.json`).
 
 ## Use the template
 

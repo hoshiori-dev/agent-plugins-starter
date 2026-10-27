@@ -32,14 +32,13 @@ one spec; `just validate` enforces the pairing. Work spec first.
      placeholders only in `args`/`env`/`cwd`); bundled code goes in
      `mcp/<name>/` with a `*_test.ts` that starts the server from the
      `mcp.json` declaration.
-   - *agent*: one file per enabled client, same `name` and identical
-     `description`: `com.anthropic.claude-code/agents/<name>.md`,
-     `com.openai/agents/<name>.toml` plus a `[agents.<name>]` table in
-     `.codex/config.toml`, `com.google.antigravity/agents/<name>.md` plus the
-     symlink `.agents/agents/<name>.md -> ../../com.google.antigravity/agents/<name>.md`.
-     Only the Claude Code version ships with the plugin; the others are
-     workspace demonstrations. Read-only tools unless the spec justifies
-     writes.
+   - *agent*: one file per enabled client whose plugin system carries
+     agents, same `name` and identical `description`; today that is
+     `com.anthropic.claude-code/agents/<name>.md` only. Codex and Antigravity
+     get no agent files: their plugins cannot carry them
+     (`.agents/knowledge/compatibility-watch.md` W9, W2) and `just validate`
+     rejects an `agents/` directory under their namespaces. Read-only tools
+     unless the spec justifies writes.
 3. **Generate.** `just gen` after any change to `plugin.json`, `mcp.json`, or
    an agents directory; commit the generated files with the change.
 4. **Check.** `just check`. Fix findings at their source; never edit a

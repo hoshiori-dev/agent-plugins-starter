@@ -3,7 +3,8 @@
 An Agent Plugins v1.0.0 plugin and the GitHub template for building one. The
 repository root is the plugin: Codex and Antigravity read it natively, Claude
 Code through a generated pointer manifest. Skills and MCP are the portable
-product; agents only demonstrate client-specific files.
+product; agents demonstrate client-specific files and ship only to Claude
+Code, the one client whose plugin system carries them.
 
 ## Always
 
@@ -33,11 +34,11 @@ product; agents only demonstrate client-specific files.
 plugin.json  mcp.json          <- the portable plugin (Agent Plugins 1.0.0); mcp_config.json is its generated Antigravity stand-in
 skills/<name>/SKILL.md         <- shipped skills (catalog: skill)
 mcp/<name>/                    <- bundled MCP server code (catalog: mcp)
-com.openai/                    <- Codex: agents/*.toml
+com.openai/                    <- Codex: README only (Codex plugins carry no agents, watch W9)
 com.anthropic.claude-code/     <- Claude Code: agents/*.md, generated mcp.json
-com.google.antigravity/        <- Antigravity: agents/*.md (workspace-only, linked from .agents/agents/)
+com.google.antigravity/        <- Antigravity: README only (plugin agents live at the root only, watch W2)
 .claude-plugin/                <- generated Claude Code manifest and marketplace
-.codex/config.toml  .agents/agents/*.md -> ../../com.google.antigravity/agents/  .agents/plugins/marketplace.json  <- client wiring
+.codex/config.toml  .agents/plugins/marketplace.json  <- Codex workspace wiring (plugin enable, generated marketplace)
 openspec/specs/<catalog>/spec.md, <catalog>/<name>/spec.md  <- catalog rules and entry specs
 scripts/                       <- management code (Deno): gen, checks, dist, labels
 .agents/knowledge/             <- agent knowledge (this file routes into it)
@@ -95,7 +96,7 @@ and `v*` tag release.
 | When this changes | Update |
 |---|---|
 | `plugin.json`, `mcp.json`, or any `com.*/agents/` file | run `just gen`; commit the generated files |
-| A skill, server, or agent is added or removed | its spec under `openspec/specs/<catalog>/<name>/`, every enabled client's agent file, `just gen` |
+| A skill, server, or agent is added or removed | its spec under `openspec/specs/<catalog>/<name>/`, every agent-capable client's agent file, `just gen` |
 | A `justfile` recipe or CI job | the Validation table above, `.agents/knowledge/github/checks.md`, the job's workflow under `.github/workflows/` |
 | A client's loading behaviour (new version) | `.agents/knowledge/client-matrix.md` table and verification log; the matching rows of `.agents/knowledge/compatibility-watch.md` |
 | A check, generator branch, or document exists only to work around a client or spec gap | add a row to `.agents/knowledge/compatibility-watch.md` |

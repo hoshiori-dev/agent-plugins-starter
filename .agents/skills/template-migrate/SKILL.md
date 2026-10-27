@@ -38,11 +38,13 @@ silently: every field that has no home here is listed for the user to decide.
    confirm `name` equals the directory and the description is 1-1024
    characters. Claude `commands/*.md` become skills with the same body and a
    description derived from the command's; Antigravity workflows likewise.
-5. **Agents.** For each source agent, write the three client versions
-   (`.agents/skills/plugin-development/SKILL.md` step 2 lists the files and
-   fields); keep the instructions body, translate tool names per client,
-   and use the same description everywhere. Add the Codex `[agents.<name>]`
-   table to `.codex/config.toml`.
+5. **Agents.** For each source agent, write one version per enabled client
+   whose plugin system carries agents (`.agents/skills/plugin-development/SKILL.md`
+   step 2; Claude Code today); keep the instructions body and translate tool
+   names. An agent from a client that cannot carry agents in a plugin (Codex
+   `[agents.*]`, Antigravity `agents/`) either becomes that Claude Code
+   version or stays in the client's own workspace configuration outside the
+   plugin; report the choice.
 6. **Rules and hooks.** Rules (`rules/`, `CLAUDE.md`, `GEMINI.md`,
    `.cursor/rules`) are not plugin components: fold always-on rules into
    `AGENTS.md` and conditional ones into `.agents/knowledge/` with a

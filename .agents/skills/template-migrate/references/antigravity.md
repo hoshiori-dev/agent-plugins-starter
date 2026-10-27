@@ -22,10 +22,11 @@ with `mcp_config.json`, `agents/`, `rules/`, `workflows/`, `hooks.json`.
   stdio with relative paths rewritten to `${PLUGIN_ROOT}/...`; `url` or
   `serverUrl` (+ `headers`) → streamable-http; `disabled`, `disabledTools` →
   reported.
-- `agents/<n>.md`: becomes `com.google.antigravity/agents/<n>.md` unchanged;
-  write the Claude Code and Codex versions from its body. Tool names are
-  Antigravity's (`view_file`, `grep_search`, ...); translate for Claude Code
-  (`Read`, `Grep`, ...) and drop for Codex.
+- `agents/<n>.md`: Antigravity plugin agents live at the plugin root only,
+  which this layout keeps portable, so the file does not join the plugin.
+  When Claude Code is enabled, write `com.anthropic.claude-code/agents/<n>.md`
+  from its body, translating tool names (`view_file`→`Read`,
+  `grep_search`→`Grep`, ...); otherwise report it as unmapped.
 - `rules/*.md`, `GEMINI.md`: fold into `AGENTS.md` or `.agents/knowledge/`;
   frontmatter triggers (`always_on`, `glob`) tell you which.
 - `workflows/*.md`: deprecated in Antigravity; each becomes a skill.

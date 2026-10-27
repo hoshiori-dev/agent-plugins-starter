@@ -20,11 +20,10 @@ what is missing and how to fix it.
    `text: "ping"`. Expected result: `example-server: ping`. If the tool is
    absent, read [references/troubleshooting.md](references/troubleshooting.md)
    and follow the section for your client.
-3. **Agents.** Check whether a subagent named `example-agent` is available
-   (Claude Code lists plugin subagents; Codex and Antigravity see it only
-   inside this repository's workspace).
-   Report "not shipped" rather than "broken" when the client does not ship
-   agents through plugins; the troubleshooting reference says which.
+3. **Agents.** Check whether a subagent named `example-agent` is available.
+   Only Claude Code lists plugin subagents; Codex and Antigravity plugins
+   carry none, so report "not shipped" rather than "broken" there (the
+   troubleshooting reference says which).
 4. **Report** one line per component: `skills: ok`, `mcp: ok | missing (<fix>)`,
    `agents: ok | not shipped | missing (<fix>)`. For a local checkout you may
    also run [scripts/list_components.sh](scripts/list_components.sh) to print
@@ -35,5 +34,5 @@ what is missing and how to fix it.
 - The MCP server runs with `deno`; a missing `deno` binary on the user's
   machine shows up as a server start failure, not as a missing tool.
 - Antigravity reads `mcp_config.json`, not `mcp.json`, until its Agent
-  Plugins flag is on; the file is generated from `mcp.json`. It does not load
-  this plugin's agents at all; only Claude Code does.
+  Plugins flag is on; the file is generated from `mcp.json`. Neither it nor
+  Codex loads this plugin's agents; only Claude Code does.

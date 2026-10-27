@@ -4,7 +4,7 @@
 // deleting that directory (and the files `footprint` lists) removes the
 // client from the template.
 import { join } from "@std/path";
-import { isDirectory, listDir } from "./findings.ts";
+import { isDirectory } from "./findings.ts";
 
 export type ClientId = "codex" | "claude-code" | "antigravity";
 
@@ -12,15 +12,15 @@ export interface ClientSpec {
   id: ClientId;
   /** Reverse-domain namespace directory at the plugin root (Agent Plugins §8). */
   namespaceDir: string;
-  /** Where this client's hand-written agent files live and their extension. */
-  agents: { dir: string; ext: ".md" | ".toml" };
+  /**
+   * Where this client's hand-written agent files live and their extension.
+   * Absent when the client's plugin system carries no agents: the plugin then
+   * ships none to it and `check_plugin.ts` rejects an agents directory under
+   * its namespace (compatibility watch W2, W9).
+   */
+  agents?: { dir: string; ext: ".md" | ".toml" };
   /** Hand-written wiring files outside the namespace directory. */
   wiringFiles: string[];
-  /**
-   * Workspace agent links: the client reads agents from `dir`, so each file in
-   * `agents.dir` gets a symlink `<dir>/<file>` pointing back at it.
-   */
-  agentLinks?: { dir: string; targetPrefix: string };
   /** Files `gen.ts` writes for this client. */
   generatedFiles: string[];
   /** Symlinks inside the namespace directory, as `link -> target`. */
@@ -31,7 +31,6 @@ export const CLIENTS: readonly ClientSpec[] = [
   {
     id: "codex",
     namespaceDir: "com.openai",
-    agents: { dir: "com.openai/agents", ext: ".toml" },
     wiringFiles: [".codex/config.toml"],
     generatedFiles: [".agents/plugins/marketplace.json"],
     links: [],
@@ -51,9 +50,7 @@ export const CLIENTS: readonly ClientSpec[] = [
   {
     id: "antigravity",
     namespaceDir: "com.google.antigravity",
-    agents: { dir: "com.google.antigravity/agents", ext: ".md" },
     wiringFiles: [],
-    agentLinks: { dir: ".agents/agents", targetPrefix: "../../com.google.antigravity/agents" },
     // Transitional: Antigravity reads mcp.json only behind its Agent Plugins
     // flag; until then it reads mcp_config.json at the plugin root (watch W1).
     generatedFiles: ["mcp_config.json"],
@@ -78,24 +75,12 @@ export function enabledClients(root: string): ClientSpec[] {
 }
 
 /** Every path that belongs to a client: what removing the client deletes. */
-export function footprint(client: ClientSpec, root: string): string[] {
+export function footprint(client: ClientSpec, _root: string): string[] {
   const paths = new Set<string>([
     client.namespaceDir,
     ...client.wiringFiles,
     ...client.generatedFiles,
     ...client.links.map((l) => l.path),
   ]);
-  if (client.agentLinks) {
-    for (const name of agentFileNames(root, client)) paths.add(`${client.agentLinks.dir}/${name}`);
-  }
   return [...paths].sort();
-}
-
-/** File names in the client's agents directory, sorted; empty when absent. */
-export function agentFileNames(root: string, client: ClientSpec): string[] {
-  const dir = join(root, client.agents.dir);
-  if (!isDirectory(dir)) return [];
-  return listDir(dir).filter((e) => e.isFile && e.name.endsWith(client.agents.ext)).map((e) =>
-    e.name
-  );
 }

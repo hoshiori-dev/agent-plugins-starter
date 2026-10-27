@@ -1,12 +1,8 @@
 # Project-level Codex configuration for this repository (trusted projects only).
 # Codex reads the plugin itself from plugin.json, mcp.json, and skills/ through the
-# local marketplace in .agents/plugins/marketplace.json (`codex plugin marketplace add .`).
-# Custom agents are not a plugin component, so each agent in com.openai/agents/ is
-# declared here. Paths are relative to this file.
+# local marketplace in .agents/plugins/marketplace.json (`codex plugin marketplace add .`);
+# this table enables it for the workspace. Codex plugins carry no agents, so the
+# plugin ships none to Codex (.agents/knowledge/compatibility-watch.md, W9).
 
 [plugins."agent-plugins-starter@agent-plugins-starter"]
 enabled = true
-
-[agents.example-agent]
-description = "Read-only reviewer that audits an Agent Plugins package layout against the v1.0.0 specification."
-config_file = "../com.openai/agents/example-agent.toml"

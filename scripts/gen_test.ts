@@ -58,8 +58,7 @@ Deno.test("gen --check reports stale, missing, and orphan files", () => {
 
 Deno.test("gen only generates for enabled clients", () => {
   const files = fixturePlugin();
-  delete files["com.google.antigravity/agents/reviewer.md"];
-  delete files[".agents/agents/reviewer.md"];
+  delete files["com.google.antigravity/README.md"];
   const root = makeTree(files);
   const list = runScript("gen.ts", ["--list"], root);
   assertEquals(list.code, 0, list.output);

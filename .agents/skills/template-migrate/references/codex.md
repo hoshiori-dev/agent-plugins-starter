@@ -24,8 +24,10 @@ with `extensions.com.openai`, or a `config.toml` with `[mcp_servers.*]` or
   with headers; `bearer_token_env_var`, `env_http_headers`, `enabled`,
   `required`, `*_timeout_sec`, `enabled_tools`, `disabled_tools`, approval
   modes → reported as unmapped (policy, not declaration).
-- `.codex/agents/<n>.toml` or `[agents.<n>] config_file`: copy the TOML to
-  `com.openai/agents/<n>.toml`, declare it in `.codex/config.toml`, and write
-  the Claude Code and Antigravity versions from `developer_instructions`.
+- `.codex/agents/<n>.toml` or `[agents.<n>] config_file`: not plugin content
+  in Codex. When Claude Code is enabled, write
+  `com.anthropic.claude-code/agents/<n>.md` from `developer_instructions`;
+  otherwise leave the role in the user's own `.codex/config.toml` and report
+  it as unmapped.
 - `AGENTS.md`: Codex reads it directly; merge rules into this repository's
   `AGENTS.md` under the budget, moving detail to `.agents/knowledge/`.
